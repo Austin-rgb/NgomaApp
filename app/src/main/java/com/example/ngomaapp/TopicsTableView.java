@@ -4,14 +4,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class TopicsTableView extends CustomView {
-    public TopicsTableView(Context ctx, String table) {
+    public TopicsTableView(Context ctx,String form, String table) {
         super(ctx, table);
-        greetings.setText("Choose a topic");
-        setContent();
+        greetings.setText(R.string.choose_a_topic);
+        new BackgroundWorker(getContext(),this).execute(ctx.getSharedPreferences("setup",0).getString("classes",""));
+        //setContent();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView textView=(TextView)view;
+                Intent intent=new Intent(getContext(), QuestionsTableActivity.class);
+                intent.putExtra("form",form);
+                intent.putExtra("subject",table);
+                intent.putExtra("table",textView.getText().toString());
+                getContext().startActivity(intent);
+            }
+        });
+        //setContent();
         //setNavigation();
     }
     void setContent(){

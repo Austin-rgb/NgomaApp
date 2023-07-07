@@ -6,7 +6,8 @@ public class TopicsTableActivity extends CustomActivity{
 @Override
 protected void onCreate(Bundle savedInstanceState){
   super.onCreate(savedInstanceState);
-  setContentView(new TopicsTableView(this,table));
+  String form =getIntent().getStringExtra("form");
+  setContentView(new TopicsTableView(this,form,table));
 }
 
 }

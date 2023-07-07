@@ -1,32 +1,45 @@
 package com.example.ngomaapp;
+
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 
-public class CustomView extends LinearLayout {
+import java.util.ArrayList;
+
+
+public class CustomView extends LinearLayout implements ChangeListener {
 TextView greetings ;
 ScrollView content;
 LinearLayout navigation;
 String table,table_nickname;
+    ArrayList<String> result=new ArrayList<String>();
+    ArrayAdapter<String> adapter;
+    ListView listView;
 public CustomView(Context ctx, String table){
   super (ctx);
   this.table=table;
-  String[] nick=table.split("%");
-  table_nickname=nick[nick.length-1];
+    listView=new ListView(this.getContext());
+    adapter=new ArrayAdapter<String>(this.getContext(), R.layout.listview,result);
+    listView.setAdapter(adapter);
+  //String[] nick=table.split("%");
+  //table_nickname=nick[nick.length-1];
   setOrientation(LinearLayout.VERTICAL);
   greetings=new TextView(ctx);
   addView(greetings);
-  content=new ScrollView(ctx);
-  addView(content);
-  navigation=new LinearLayout(ctx);
-  addView(navigation);
+  addView(listView);
+  //content=new ScrollView(ctx);
+  //addView(content);
+  //navigation=new LinearLayout(ctx);
+  //addView(navigation);
 }
 
 
@@ -79,4 +92,21 @@ break ;
     if(tree.length>=2)return tree[tree.length-2];
     else return "";
   }
+    public void onSuccess(String change) {
+        try {
+            JSONArray jsonArray=new JSONArray(change);
+            for (int i=0;i<jsonArray.length()-1;i++){
+                result.add(jsonArray.getJSONObject(i).getString("name"));
+            }
+        } catch (JSONException e) {
+            result.add(e.getMessage());
+            result.add(change);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onError(String change) {
+
+    }
 }

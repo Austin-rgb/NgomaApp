@@ -4,11 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.LinearLayout;
 
-public class QuestionsTableView extends CustomView {
-    public QuestionsTableView(Context ctx, String table) {
-        super(ctx, table);
-        greetings.setText(getContext().getString(R.string.questions_on)+table);
-        setContent();
+import org.json.JSONArray;
+import org.json.JSONException;
+
+public class QuestionsTableView extends CustomView implements ChangeListener{
+    public QuestionsTableView(Context ctx,String form, String subject,String topic) {
+        super(ctx, topic);
+        greetings.setText(getContext().getString(R.string.questions_on)+topic);
+        new BackgroundWorker(getContext(),this).execute(ctx.getSharedPreferences("setup",0).getString("questions","")+"where class="+form+" and subject="+subject+"and topic="+topic+";");
+        //setContent();
+
+        //setContent();
        // setNavigation();
     }
     void setContent(){
@@ -27,4 +33,16 @@ public class QuestionsTableView extends CustomView {
 content.addView(linearLayout);
 }
 
+    @Override
+    public void onSuccess(String change) {
+        try {
+            JSONArray jsonArray=new JSONArray(change);
+            for (int i=0;i<jsonArray.length()-1;i++){
+                result.add(jsonArray.getJSONObject(i).getString("name"));
+            }
+        } catch (JSONException e) {
+            result.add(e.getMessage());
+        }
+        adapter.notifyDataSetChanged();
+    }
 }
