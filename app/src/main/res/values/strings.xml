@@ -69,4 +69,5 @@
     </string>
     <string name="title_activity_answer">AnswerActivity</string>
     <string name="back">Back</string>
+    <string name="this_activity_is_working">This activity is working</string>
 </resources>
