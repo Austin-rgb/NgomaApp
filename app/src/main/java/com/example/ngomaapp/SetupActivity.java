@@ -29,11 +29,6 @@ public class SetupActivity extends AppCompatActivity {
                 }
                 spe.apply();
             }
-
-            @Override
-            public void onError(String change) {
-
-            }
         });
     }
 }

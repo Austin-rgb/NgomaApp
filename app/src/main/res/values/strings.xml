@@ -69,4 +69,6 @@
     </string>
     <string name="title_activity_answer">AnswerActivity</string>
     <string name="back">Back</string>
+    <string name="choose_your_class">Choose your class</string>
+    <string name="choose_a_topic">Choose a topic</string>
 </resources>

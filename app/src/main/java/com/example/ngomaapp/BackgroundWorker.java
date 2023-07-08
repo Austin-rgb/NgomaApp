@@ -41,14 +41,14 @@ public class BackgroundWorker extends AsyncTask<String,String,String> {
         super.onPreExecute();
     }
     String getRemoteData(String... args){
-        String username="root";
-        String password="Ostiness";
-        String database="ngomatest";
-        String script=args[0];
-        String[] result ={""};
-        new Runnable() {
-            @Override
-            public void run() {
+        String request=args[0];
+        String form="na";
+        if (args.length>1)form=args[1];
+        String subject="na";
+        if (args.length>2)subject=args[2];
+        String topic="na";
+        if (args.length>3)topic=args[3];
+        String result = "";
                 try{
                     URL url=new URL("http://localhost:8080/getdata.php");
                     try {
@@ -57,14 +57,14 @@ public class BackgroundWorker extends AsyncTask<String,String,String> {
                         huc.setDoOutput(true);
                         OutputStream os=huc.getOutputStream();
                         BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
-                        String post= URLEncoder.encode("username","UTF-8")+
-                                "="+URLEncoder.encode(username,"UTF-8")+
-                                "&"+URLEncoder.encode("password","UTF-8")+
-                                "="+URLEncoder.encode(password,"UTF-8")+
-                                "&"+URLEncoder.encode("database","UTF-8")+
-                                "="+URLEncoder.encode(database,"UTF-8")+
-                                "&"+URLEncoder.encode("script","UTF-8")+
-                                "="+URLEncoder.encode(script,"UTF-8");
+                        String post= URLEncoder.encode("request","UTF-8")+
+                                "="+URLEncoder.encode(request,"UTF-8")+
+                                "&"+URLEncoder.encode("class","UTF-8")+
+                                "="+URLEncoder.encode(form,"UTF-8")+
+                                "&"+URLEncoder.encode("subject","UTF-8")+
+                                "="+URLEncoder.encode(subject,"UTF-8")+
+                                "&"+URLEncoder.encode("topic","UTF-8")+
+                                "="+URLEncoder.encode(topic,"UTF-8");
                         bw.write(post);
                         bw.flush();
                         bw.close();
@@ -72,7 +72,7 @@ public class BackgroundWorker extends AsyncTask<String,String,String> {
                         BufferedReader br=new BufferedReader(isr);
                         String line;
                         while((line=br.readLine())!=null){
-                            result[0] +=line;
+                            result +=line;
                         }
                         br.close();
                         isr.close();
@@ -98,10 +98,8 @@ public class BackgroundWorker extends AsyncTask<String,String,String> {
                         });
                     }
                 }catch(MalformedURLException e){
-                    Log.e("URLError","malformed url");
+                    throw new RuntimeException(e);
                 }
-            }
-        }.run();
-        return result[0];
+        return result;
     }
 }

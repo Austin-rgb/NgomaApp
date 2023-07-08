@@ -8,7 +8,7 @@ protected void onCreate(Bundle savedInstanceState){
   super.onCreate(savedInstanceState);
   String form=getIntent().getStringExtra("form");
   String subject =getIntent().getStringExtra("subject");
-  String topic =getIntent().getStringExtra("topic");
+  String topic =getIntent().getStringExtra("table");
   setContentView(new QuestionsTableView(this,form,subject,topic));
 }
 }
