@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,7 +20,8 @@ import java.net.URLEncoder;
 
 public class BackgroundWorker extends AsyncTask<String,String,String> {
     ChangeListener listener;
-    Context context;
+    private Context context;
+    String[] params;
     public BackgroundWorker(Context ctx, ChangeListener changeListener) {
         context=ctx;
         listener=changeListener;
@@ -28,12 +29,17 @@ public class BackgroundWorker extends AsyncTask<String,String,String> {
 
     @Override
     protected String doInBackground(String... params) {
+        this.params=params;
         return getRemoteData(params);
     }
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         listener.onSuccess(s);
+        SharedPreferences.Editor editor= context.getSharedPreferences("data",0).edit();
+        String index=String.join("",params);
+        editor.putString(index,s);
+        editor.apply();
     }
 
     @Override
@@ -48,7 +54,7 @@ public class BackgroundWorker extends AsyncTask<String,String,String> {
         if (args.length>2)subject=args[2];
         String topic="na";
         if (args.length>3)topic=args[3];
-        String result = "";
+        StringBuilder result = new StringBuilder();
                 try{
                     URL url=new URL("http://localhost:8080/getdata.php");
                     try {
@@ -72,7 +78,7 @@ public class BackgroundWorker extends AsyncTask<String,String,String> {
                         BufferedReader br=new BufferedReader(isr);
                         String line;
                         while((line=br.readLine())!=null){
-                            result +=line;
+                            result.append(line);
                         }
                         br.close();
                         isr.close();
@@ -100,6 +106,6 @@ public class BackgroundWorker extends AsyncTask<String,String,String> {
                 }catch(MalformedURLException e){
                     throw new RuntimeException(e);
                 }
-        return result;
+        return result.toString();
     }
 }

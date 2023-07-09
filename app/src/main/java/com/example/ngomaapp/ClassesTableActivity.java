@@ -3,9 +3,12 @@ package com.example.ngomaapp;
 import android.os.Bundle;
 
 public class ClassesTableActivity extends CustomActivity {
+  ClassesTableView classesTableView;
 @Override
 protected void onCreate(Bundle savedInstanceState){
   super.onCreate(savedInstanceState);
-  setContentView(new ClassesTableView(this,table));
+
+  classesTableView = new ClassesTableView(this,table);
+  setContentView(classesTableView);
 }
 }

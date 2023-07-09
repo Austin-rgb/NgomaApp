@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class CustomView extends LinearLayout implements ChangeListener {
 TextView greetings ;
-String table;
+String table,data;
     ArrayList<String> result=new ArrayList<String>();
     ArrayAdapter<String> adapter;
     ListView listView;
@@ -27,6 +27,7 @@ public CustomView(Context ctx, String table){
   addView(listView);
 }
     public void onSuccess(String change) {
+    data=change;
         String[] rows=change.split(",");
             for (int i=0;i<rows.length-1;i++){
                 result.add(rows[i+1]);
