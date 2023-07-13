@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="242dp"
+        android:layout_height="67dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="92dp"
+        android:layout_marginBottom="252dp"
+        android:allowUndo="false"
+        android:onClick="login"
+        android:text="Login" />
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="323dp"
+        android:layout_height="41dp"
+        android:layout_below="@id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="57dp"
+        android:ems="10"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="269dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/textView3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="88dp"
+        android:layout_marginBottom="32dp"
+        android:ems="10"
+        android:inputType="textPassword" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="229dp"
+        android:layout_height="49dp"
+        android:layout_centerHorizontal="true"
+        android:text="email"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="246dp"
+        android:layout_height="51dp"
+        android:layout_below="@id/email"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="54dp"
+        android:text="password"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/textView2"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:text="TextView" />
+</RelativeLayout>

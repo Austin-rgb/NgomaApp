@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="#FF5722">
@@ -9,9 +10,8 @@
         android:id="@+id/txtngoma"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="300dp"
-        android:layout_marginBottom="300dp"
+        android:layout_above="@+id/btnstart"
+        android:layout_marginBottom="39dp"
         android:gravity="center|center_horizontal|center_vertical"
         android:text="Ngoma Students App"
         android:textColor="@color/blue"
@@ -21,10 +21,12 @@
         android:id="@+id/btnstart"
         android:layout_width="300dp"
         android:layout_height="64dp"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"
-        android:background="@color/red"
+        android:layout_marginEnd="62dp"
+        android:layout_marginBottom="220dp"
+        android:background="@color/blue"
         android:onClick="start"
         android:text="@string/start"
         android:textSize="34sp" />
@@ -33,7 +35,26 @@
         android:id="@+id/imglogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/txtngoma"
+        android:layout_alignParentStart="false"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="121dp"
         android:layout_marginTop="50dp"
-        android:layout_marginStart="100dp"
-        app:srcCompat="@drawable/logo" />
+        android:layout_marginBottom="21dp"
+        android:contentDescription="TODO"
+        android:visibility="visible"
+        app:srcCompat="@drawable/logo"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="256dp"
+        android:layout_height="62dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="76dp"
+        android:layout_marginBottom="80dp"
+        android:onClick="login"
+        android:text="Login" />
+
 </RelativeLayout>
