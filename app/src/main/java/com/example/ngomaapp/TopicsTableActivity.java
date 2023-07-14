@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import java.net.URLEncoder;
+import java.util.Arrays;
 
 public class TopicsTableActivity extends CustomActivity{
 @Override
@@ -32,7 +33,7 @@ protected void onCreate(Bundle savedInstanceState) {
     internetDaemon.setChangeListener(new ChangeListener() {
       @Override
       public void onSuccess(String change) {
-        if (change != version) {
+        if (!change.equals(version)) {
           internetDaemon.setChangeListener(new ChangeListener() {
             @Override
             public void onSuccess(String change) {
@@ -40,10 +41,7 @@ protected void onCreate(Bundle savedInstanceState) {
               String newData = change.split(";")[0];
               String[] newRows = newData.split(",");
               arrayList.clear();
-              for (String s :
-                      newRows) {
-                arrayList.add(s);
-              }
+              arrayList.addAll(Arrays.asList(newRows));
               arrayAdapter.notifyDataSetChanged();
               //Backup data
               sharedPreferences.edit()

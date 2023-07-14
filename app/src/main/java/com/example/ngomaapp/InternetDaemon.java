@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class InternetDaemon extends AsyncTask<String, String, String> {
@@ -29,25 +30,37 @@ public class InternetDaemon extends AsyncTask<String, String, String> {
             changeListener.onFailure("//connection problem//");
         else changeListener.onSuccess(s);
     }
+public void connect(String... strings){
+        Thread thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getRemoteData(strings);
+            }
+        });
+        thread.setDaemon(true);
+        thread.setName("internet");
 
+}
     private String getRemoteData(String[] strings) {
-        URL url = null;
+        URL url;
         StringBuilder result;
         try {
             url = new URL(strings[0]);
-            HttpURLConnection huc = null;
+            HttpURLConnection huc;
             try {
                 huc = (HttpURLConnection) url.openConnection();
                 huc.setDoInput(true);
                 huc.setDoOutput(true);
-                OutputStream os = null;
-                os = huc.getOutputStream();
-                BufferedWriter bw = null;
-                bw = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                bw.write(strings[1]);
-                bw.flush();
-                bw.close();
-                InputStreamReader isr = null;
+                if (strings.length>1){
+                    OutputStream os;
+                    os = huc.getOutputStream();
+                    BufferedWriter bw;
+                    bw = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
+                    bw.write(strings[1]);
+                    bw.flush();
+                    bw.close();
+                }
+                InputStreamReader isr;
                 isr = new InputStreamReader(huc.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
                 result = new StringBuilder();

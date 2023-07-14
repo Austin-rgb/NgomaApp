@@ -1,11 +1,12 @@
 package com.example.ngomaapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-public class MainActivity extends Activity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -13,11 +14,18 @@ public class MainActivity extends Activity {
     }
 
     public void start(View v) {
-        Intent intent=new Intent(this,ClassesTableActivity.class);
-        startActivity(intent);
+        if (getSharedPreferences("credentials",0).getBoolean("serverNotSet",true))setup();
+        else {
+            Intent intent=new Intent(this,ClassesTableActivity.class);
+            startActivity(intent);
+        }
     }
     public void login(View v) {
         Intent intent=new Intent(this,LoginActivity.class);
+        startActivity(intent);
+    }
+    void setup() {
+        Intent intent=new Intent(this,SetupActivity.class);
         startActivity(intent);
     }
 }

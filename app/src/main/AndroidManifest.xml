@@ -32,6 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AnswerActivity" />
+        <activity android:name="com.example.ngomaapp.SetupActivity" />
     </application>
 
 </manifest>

@@ -13,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class CustomActivity extends AppCompatActivity implements ChangeListener {
@@ -48,13 +49,10 @@ public boolean onOptionsItemSelected(MenuItem menuItem){
 
   @Override
   public void onSuccess(String change) {
-    String [] dataAndVersion=change.split(";");
-    String data=dataAndVersion[0];
-    String version=dataAndVersion[1];
-    String[] rows=data.split(",");
-    for (int i=0;i<rows.length-1;i++){
-      arrayList.add(rows[i+1]);
-    }
+//    String [] dataAndVersion=change.split(";");
+//   String data=dataAndVersion[0];
+    String[] rows=change.split("::");
+    arrayList.addAll(Arrays.asList(rows).subList(1, rows.length));
     arrayAdapter.notifyDataSetChanged();
     //Save for offline
     getSharedPreferences("data",0)
@@ -68,9 +66,7 @@ public boolean onOptionsItemSelected(MenuItem menuItem){
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setMessage("Please connect to the internet.")
             .setTitle("Network Error")
-            .setPositiveButton("Ok", (dialogInterface, i) -> {
-              finish();
-            });
+            .setPositiveButton("Ok", (dialogInterface, i) -> finish());
 
     AlertDialog dialog = builder.create();
     dialog.setCancelable(false);

@@ -13,9 +13,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class LoginActivity extends AppCompatActivity {
+    String server=null;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        server=getSharedPreferences("credentials",0).getString("serverAddress","127.0.0.1");
         setContentView(R.layout.login);
     }
 
