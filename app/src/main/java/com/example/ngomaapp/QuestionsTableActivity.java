@@ -12,8 +12,8 @@ public class QuestionsTableActivity extends CustomActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Classes");
-        table = "class";
+        setTitle("Questions");
+        table = "question";
         String form=getIntent().getStringExtra("class");
         String subject=getIntent().getStringExtra("subject");
         String topic=getIntent().getStringExtra("topic");
