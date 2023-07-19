@@ -21,8 +21,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void login(View v) {
-        Intent intent=new Intent(this,LoginActivity.class);
+        if (getSharedPreferences("credentials",0).getBoolean("serverNotSet",true))setup();
+        else {
+
+            Intent intent=new Intent(this,LoginActivity.class);
         startActivity(intent);
+        }
     }
     void setup() {
         Intent intent=new Intent(this,SetupActivity.class);

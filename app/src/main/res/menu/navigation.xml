@@ -4,11 +4,11 @@
 
     <item
         android:icon="@android:drawable/ic_media_previous"
-        android:title="Item" />
+        android:title="Previous" />
     <item
         android:icon="@android:drawable/ic_menu_info_details"
-        android:title="Item" />
+        android:title="Details" />
     <item
         android:icon="@android:drawable/ic_media_next"
-        android:title="Item" />
+        android:title="Next" />
 </menu>

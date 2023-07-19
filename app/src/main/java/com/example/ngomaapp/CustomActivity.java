@@ -2,6 +2,7 @@ package com.example.ngomaapp;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -12,12 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-
-
 public class CustomActivity extends AppCompatActivity implements ChangeListener {
 final String mainUrl="http://127.0.0.1:8080/getdata.php";
+final String testUrl="http://127.0.0.1:8080/smi.php";
+String table=null;
+    String parentTable=null;
 InternetDaemon internetDaemon;
 BottomNavigationView bottomNavigationView;
 ListView listView;
@@ -32,6 +37,7 @@ protected void onCreate(Bundle b){
   arrayList=new ArrayList<>();
   arrayAdapter=new ArrayAdapter<>(this,R.layout.listview,arrayList);
   listView=findViewById(R.id.listview);
+  listView.setAdapter(arrayAdapter);
   floatingActionButton=findViewById(R.id.actionButton);
   internetDaemon.setChangeListener(this);
 }
@@ -49,16 +55,18 @@ public boolean onOptionsItemSelected(MenuItem menuItem){
 
   @Override
   public void onSuccess(String change) {
-//    String [] dataAndVersion=change.split(";");
-//   String data=dataAndVersion[0];
-    String[] rows=change.split("::");
-    arrayList.addAll(Arrays.asList(rows).subList(1, rows.length));
+    Log.i("CustomActivity","got remote data "+change);
+    try {
+      JSONArray jsonArray=new JSONArray(change);
+      for (int i = 0; i < jsonArray.length(); i++) {
+        JSONObject jsonObject=jsonArray.getJSONObject(i);
+        arrayList.add(jsonObject.getString(table));
+      }
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
+    }
     arrayAdapter.notifyDataSetChanged();
-    //Save for offline
-    getSharedPreferences("data",0)
-            .edit()
-            .putString(internetDaemon.forTable(),change)
-            .apply();
+    getSharedPreferences("data",0).edit().putString(internetDaemon.forTable(),change).apply();
   }
 
   @Override

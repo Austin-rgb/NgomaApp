@@ -2,15 +2,11 @@ package com.example.ngomaapp;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 public class LoginActivity extends AppCompatActivity {
     String server=null;
@@ -26,24 +22,19 @@ public class LoginActivity extends AppCompatActivity {
         EditText passwordInput = (EditText) findViewById(R.id.password);
         String email = emailInput.getText().toString();
         String password = passwordInput.getText().toString();
-        String post = null;
-        try {
-             post = URLEncoder.encode("email", "UTF-8")
-                    + "=" + URLEncoder.encode(email, "UTF-8")
-                    + "&" + URLEncoder.encode("password", "UTF-8")
-                    + "=" + URLEncoder.encode(password, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.e("Login",e.getMessage());
-        }
-        String login="http";
+        if (email=="" || password=="")return;
+        String login=server+"/smi.php";
         InternetDaemon internetDaemon = new InternetDaemon();
-        internetDaemon.setChangeListener(new ChangeListener() {
+        GData gData=new GData(this,login);
+
+        gData.setChangeListener(new ChangeListener() {
             @Override
             public void onSuccess(String change) {
-                if (change.equals("success")){
+                if (change.equals("")){
                     getSharedPreferences("credentials",0).edit()
                             .putString("email",email)
                             .putString("password",password)
+                            .putBoolean("loggedIn",true)
                             .apply();
                 }
                 else {
@@ -67,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
                 dialog.show();
 
             }
-        }).execute(login,post);
+        }).rawQuery("select * from teachers where email="+email+",password="+password);
+        String post =Utils.encode(new String[]{"username","password"},new String[]{});
     }
 }
+

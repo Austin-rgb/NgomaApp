@@ -30,8 +30,9 @@ public class InternetDaemon extends AsyncTask<String, String, String> {
             changeListener.onFailure("//connection problem//");
         else changeListener.onSuccess(s);
     }
-public void connect(String... strings){
-        Thread thread=new Thread(new Runnable() {
+
+    public void connect(String... strings) {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 getRemoteData(strings);
@@ -40,7 +41,8 @@ public void connect(String... strings){
         thread.setDaemon(true);
         thread.setName("internet");
 
-}
+    }
+
     private String getRemoteData(String[] strings) {
         URL url;
         StringBuilder result;
@@ -51,15 +53,14 @@ public void connect(String... strings){
                 huc = (HttpURLConnection) url.openConnection();
                 huc.setDoInput(true);
                 huc.setDoOutput(true);
-                if (strings.length>1){
-                    OutputStream os;
-                    os = huc.getOutputStream();
-                    BufferedWriter bw;
-                    bw = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-                    bw.write(strings[1]);
-                    bw.flush();
-                    bw.close();
-                }
+                OutputStream os;
+                os = huc.getOutputStream();
+                BufferedWriter bw;
+                bw = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
+                bw.write(strings[1]);
+                bw.flush();
+                bw.close();
+                Log.i("InternetDaemon", "sent request " + strings[1]);
                 InputStreamReader isr;
                 isr = new InputStreamReader(huc.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
@@ -70,13 +71,14 @@ public void connect(String... strings){
                 }
                 br.close();
                 isr.close();
+                Log.i("InternetDaemon", result.toString());
             } catch (IOException e) {
-                Log.e("Internet daemon",e.getMessage());
+                Log.e("Internet daemon", "got response " + e.getMessage());
                 return "//connection problem//";
             }
             huc.disconnect();
         } catch (MalformedURLException e) {
-            Log.e("Internet daemon",e.getMessage());
+            Log.e("Internet daemon", e.getMessage());
             return "//incorrect url//";
         }
         return result.toString();
@@ -86,10 +88,12 @@ public void connect(String... strings){
         this.changeListener = changeListener;
         return this;
     }
-    public InternetDaemon forTable(String table){
-        this.table=table;
+
+    public InternetDaemon forTable(String table) {
+        this.table = table;
         return this;
     }
+
     public String forTable() {
         return table;
     }

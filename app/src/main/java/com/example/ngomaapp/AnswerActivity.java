@@ -8,29 +8,45 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import java.util.Objects;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 public class AnswerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String serverAddress=getSharedPreferences("credentials",0).getString("serverAddress","127.0.0.1");
+        String url=serverAddress+"/smi.php";
+        GData data=new GData(this,url);
         LinearLayout linearLayout=new LinearLayout(this);
-        String type=getIntent().getStringExtra("type");
-        TextView textView=new TextView(this);
-        WebView webView=new WebView(this);
-        if (Objects.equals(type, "text")){
-            String text=getIntent().getStringExtra("text");
-            textView.setText(text);
-            linearLayout.addView(textView);
-        }else
-        if (Objects.equals(type, "video")){
-            String frame=getIntent().getStringExtra("frame");
-            webView.loadData(frame,"text/html","utf-8");
-            linearLayout.addView(webView);
-        }
         Button button=new Button(this);
         button.setText(R.string.back);
         button.setOnClickListener(view -> finish());
         linearLayout.addView(button);
         setContentView(linearLayout);
+        TextView textView=new TextView(this);
+        WebView webView=new WebView(this);
+        data.setChangeListener(new ChangeListener() {
+            @Override
+            public void onSuccess(String change) {
+                JSONObject jsonObject= null;
+                try {
+                    jsonObject = new JSONObject(change);
+                    String text=jsonObject.getString("text");
+                    String link=jsonObject.getString("link");
+                    textView.setText(text);
+                    webView.loadData(link,"text/html","utf-8");
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+
+            @Override
+            public void onFailure(String change) {
+
+            }
+        }).rawQuery("select text,link from answers where question_id=");
+
     }
 }
