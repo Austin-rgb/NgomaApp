@@ -57,10 +57,12 @@ public class InternetDaemon extends AsyncTask<String, String, String> {
                 os = huc.getOutputStream();
                 BufferedWriter bw;
                 bw = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-                bw.write(strings[1]);
-                bw.flush();
-                bw.close();
-                Log.i("InternetDaemon", "sent request " + strings[1]);
+                if (strings.length > 1) {
+                    bw.write(strings[1]);
+                    bw.flush();
+                    bw.close();
+                    Log.i("InternetDaemon", "sent request " + strings[1]);
+                }
                 InputStreamReader isr;
                 isr = new InputStreamReader(huc.getInputStream());
                 BufferedReader br = new BufferedReader(isr);

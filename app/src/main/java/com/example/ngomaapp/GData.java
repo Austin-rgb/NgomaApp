@@ -13,13 +13,14 @@ public class GData {
 
     public GData(Context context, String link ) {
         this.ctx = context;
-        SharedPreferences sharedPreferences=context.getSharedPreferences("credentials",0);
-        this.link = link;
-        this.username = sharedPreferences.getString("username","student");
-        this.password = sharedPreferences.getString("password","student");
-        this.database = sharedPreferences.getString("database","ngomatest");
-        rData = new RData(context, link, username, password, this.database);
-        lData=new LData(context,database,null,1);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("credentials", 0);
+        String serverAddress = sharedPreferences.getString("serverAddress", "http://127.0.0.1");
+        this.link = serverAddress + link;
+        this.username = sharedPreferences.getString("username", "student");
+        this.password = sharedPreferences.getString("password", "student");
+        this.database = sharedPreferences.getString("database", "ngomatest");
+        rData = new RData(context, this.link, username, password, this.database);
+        lData = new LData(context, database, null, 1);
         listener = new ChangeListener() {
             @Override
             public void onSuccess(String change) {

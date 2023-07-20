@@ -19,9 +19,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 public class CustomActivity extends AppCompatActivity implements ChangeListener {
-final String mainUrl="http://127.0.0.1:8080/getdata.php";
-final String testUrl="http://127.0.0.1:8080/smi.php";
-String table=null;
+final String mainUrl = "http://127.0.0.1:8080/getdata.php";
+  final String testUrl = "/smi.php";
+  String table = null;
     String parentTable=null;
 InternetDaemon internetDaemon;
 BottomNavigationView bottomNavigationView;

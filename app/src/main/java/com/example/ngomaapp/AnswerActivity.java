@@ -33,7 +33,8 @@ public class AnswerActivity extends AppCompatActivity {
                 try {
                     jsonObject = new JSONObject(change);
                     String text=jsonObject.getString("text");
-                    String link=jsonObject.getString("link");
+                    String link = jsonObject.getString("link");
+                    String data = "<iframe></iframe>";
                     textView.setText(text);
                     webView.loadData(link,"text/html","utf-8");
                 } catch (JSONException e) {
