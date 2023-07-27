@@ -62,7 +62,7 @@ public class InternetDaemon extends AsyncTask<String, String, Result> {
                 isr.close();
                 Log.i("InternetDaemon", result.toString());
             } catch (IOException e) {
-                Log.e("Internet daemon", "got response " + e.getMessage());
+                Log.e("Internet daemon", "IOException " + e.getMessage());
                 return new Result(null, e);
             }
             huc.disconnect();
