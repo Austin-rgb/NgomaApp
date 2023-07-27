@@ -14,13 +14,13 @@ public class SubjectsTableActivity extends CustomActivity {
         super.onCreate(savedInstanceState);
         setTitle("Subjects");
         table = "subject";
-        String form=getIntent().getStringExtra("class");
-        GData gData=new GData(this,testUrl);
-        gData.setChangeListener(this).rawQuery("select distinct subject from questions where class=\""+form+"\"");
+        String form = getIntent().getStringExtra("class");
+        GData gData = new GData(this, testUrl, "questions");
+        gData.rawQuery("select distinct subject from questions where class=\"" + form + "\"", this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(this, TopicsTableActivity.class);
             TextView tv = (TextView) view;
-            intent.putExtra("class", form).putExtra("subject",tv.getText().toString());
+            intent.putExtra("class", form).putExtra("subject", tv.getText().toString());
             startActivity(intent);
         });
         if (getSharedPreferences("credentials", 0).getBoolean("logged in", false)) {
@@ -38,19 +38,24 @@ public class SubjectsTableActivity extends CustomActivity {
                             newName.selectAll();
                             builder.setTitle("RENAME")
                                     .setView(newName)
-                                    .setPositiveButton("OK", (dialogInterface, i1) -> {
-                                        gData.setChangeListener(new ChangeListener() {
-                                            @Override
-                                            public void onSuccess(String change) {
-
-                                            }
-
-                                            @Override
-                                            public void onFailure(String change) {
-
-                                            }
-                                        }).update("questions","class=\""+newName.getText().toString()+"\"","class=\""+textView.getText().toString()+"\"");
-                                    })
+                                    .setPositiveButton("OK",
+                                            (dialogInterface, i1) -> {
+                                                gData.update("questions", "class=\"" + newName.getText().toString() + "\"", "class=\"" + textView.getText().toString() + "\"",
+                                                        (result, error) -> {
+                                                            AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+                                                            if (error == null) {
+                                                                builder1.setTitle("Success")
+                                                                        .setMessage("Successfully updated " + textView.getText().toString())
+                                                                        .create()
+                                                                        .show();
+                                                            } else {
+                                                                builder1.setTitle("Success")
+                                                                        .setMessage(error.getMessage())
+                                                                        .create()
+                                                                        .show();
+                                                            }
+                                                        });
+                                            })
                                     .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
                                         //To do
                                     })
@@ -59,20 +64,21 @@ public class SubjectsTableActivity extends CustomActivity {
                             builder.setTitle("DELETE")
                                     .setMessage("Are you sure you want to delete " + textView.getText().toString())
                                     .setPositiveButton("OK", (dialogInterface, i1) -> {
-                                        gData.setChangeListener(new ChangeListener() {
-                                            @Override
-                                            public void onSuccess(String change) {
-                                                AlertDialog.Builder builder1=new AlertDialog.Builder(SubjectsTableActivity.this);
-                                                builder1.setTitle("Success")
-                                                        .setMessage("Successfully deleted "+textView.getText().toString())
-                                                        .create().show();
-                                            }
-
-                                            @Override
-                                            public void onFailure(String change) {
-//create user 'use***' identified by 'pas***'
-                                            }
-                                        }).delete("questions","class="+form+" subject="+textView.getText().toString());
+                                        gData.delete("questions", "class=" + form + " subject=" + textView.getText().toString(),
+                                                (result, error) -> {
+                                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+                                                    if (error == null) {
+                                                        builder1.setTitle("Success")
+                                                                .setMessage("Successfully deleted " + textView.getText().toString())
+                                                                .create()
+                                                                .show();
+                                                    } else {
+                                                        builder1.setTitle("Success")
+                                                                .setMessage(error.getMessage())
+                                                                .create()
+                                                                .show();
+                                                    }
+                                                });
 
 
                                     })

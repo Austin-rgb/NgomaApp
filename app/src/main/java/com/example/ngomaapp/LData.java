@@ -1,10 +1,12 @@
 package com.example.ngomaapp;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -13,11 +15,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LData extends SQLiteOpenHelper {
-    ChangeListener changeListener;
     String databaseName;
+    Context context;
+    Callback callback;
+
     public LData(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
-        databaseName=name;
+        this.context = context;
+        databaseName = name;
+
     }
 
     @Override
@@ -30,16 +36,30 @@ public class LData extends SQLiteOpenHelper {
 
     }
 
-    public LData rawQuery(String query) {
-        Cursor cursor=this.getWritableDatabase().rawQuery(query,null);
-        String[] columns= cursor.getColumnNames();
-        int rows= cursor.getCount();
-        if (rows>0) {
+    public LData rawQuery(String query, Callback callback) {
+        this.callback = callback;
+        Cursor cursor = null;
+        try {
+            cursor = this.getWritableDatabase().rawQuery(query, null);
+        } catch (Exception e) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Database error")
+                    .setMessage(e.getMessage())
+                    .create()
+                    .show();
+            Log.e("LData", e.getMessage());
+            failure(e);
+        }
+
+        assert cursor != null;
+        String[] columns = cursor.getColumnNames();
+        int rows = cursor.getCount();
+        if (rows > 0) {
             StringBuilder jsonArray = new StringBuilder();
             jsonArray.append("[");
             for (int i = 0; i < rows; i++) {
                 cursor.moveToPosition(i);
-                JSONObject jsonObject=new JSONObject();
+                JSONObject jsonObject = new JSONObject();
                 for (int j = 0; j < columns.length; j++) {
                     try {
                         jsonObject.put(columns[i],cursor.getString(i));
@@ -51,44 +71,50 @@ public class LData extends SQLiteOpenHelper {
             }
             jsonArray.append("]");
             try {
-                changeListener.onSuccess(String.valueOf(new JSONArray(jsonArray.toString())));
+                success(String.valueOf(new JSONArray(jsonArray.toString())));
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                failure(new Exception("Could not parse the data returned from the database"));
             }
         } else {
-            changeListener.onFailure("No data");
+            failure(new Exception("No data"));
         }
         cursor.close();
         return this;
     }
 
-    public LData insert(String table, String[] columns, String[] values) {
-        ContentValues contentValues=new ContentValues();
+    public void insert(String table, String[] columns, String[] values, Callback callback) {
+        this.callback = callback;
+        ContentValues contentValues = new ContentValues();
         for (int i = 0; i < columns.length; i++) {
-            contentValues.put(columns[i],values[i]);
+            contentValues.put(columns[i], values[i]);
         }
-        SQLiteDatabase database= this.getWritableDatabase();
-                ;
-        changeListener.onSuccess(String.valueOf(database.insert(table,null,contentValues)));
-        return this;
+        SQLiteDatabase database = this.getWritableDatabase();
+        long r = database.insert(table, null, contentValues);
+        database.close();
+        if (r < 0) failure(new Exception("Could not insert data into the local database"));
+
     }
 
-    public LData update(String table, String[] columns, String[] values, String where, String[] fields) {
-        ContentValues contentValues=new ContentValues();
+    public LData update(String table, String[] columns, String[] values, String where, String[] fields, Callback callback) {
+        this.callback = callback;
+        ContentValues contentValues = new ContentValues();
         for (int i = 0; i < columns.length; i++) {
-            contentValues.put(columns[i],values[i]);
+            contentValues.put(columns[i], values[i]);
         }
-        this.getWritableDatabase().update(table,contentValues,where,fields);
+        this.getWritableDatabase().update(table, contentValues, where, fields);
         return this;
     }
 
-    public LData delete(String table, String where, String[] whereArgs) {
-        this.getWritableDatabase().delete(table,where,whereArgs);
-        return this;
+    public void delete(String table, String where, String[] whereArgs, Callback callback) {
+        this.callback = callback;
+        this.getWritableDatabase().delete(table, where, whereArgs);
     }
 
-    public LData then(ChangeListener changeListener) {
-        this.changeListener=changeListener;
-        return this;
+    private void success(String change) {
+        if (callback != null) callback.callback(change, null);
+    }
+
+    private void failure(Exception change) {
+        if (callback != null) callback.callback(null, change);
     }
 }

@@ -16,8 +16,7 @@
         android:theme="@style/Theme.NgomaApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".LoginActivity" />
+        <activity android:name=".LoginActivity" />
         <activity android:name=".ClassesTableActivity" />
         <activity android:name=".SubjectsTableActivity" />
         <activity android:name=".TopicsTableActivity" />
@@ -33,6 +32,9 @@
         </activity>
         <activity android:name=".AnswerActivity" />
         <activity android:name="com.example.ngomaapp.SetupActivity" />
+        <activity
+            android:name="com.example.ngomaapp.Playground"
+            android:exported="true" />
     </application>
 
 </manifest>

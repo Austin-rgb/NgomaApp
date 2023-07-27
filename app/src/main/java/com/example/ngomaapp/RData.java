@@ -1,5 +1,6 @@
 package com.example.ngomaapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.webkit.WebView;
 
@@ -9,7 +10,6 @@ import androidx.appcompat.app.AlertDialog;
 public class RData {
 
     Context ctx;
-    ChangeListener changeListener;
     String link;
     String username;
     String password;
@@ -24,38 +24,33 @@ public class RData {
         this.password = password;
         this.database = database;
         internetDaemon = new InternetDaemon();
-        serverError=new AlertDialog.Builder(context);
+        serverError = new AlertDialog.Builder(context);
         serverError.setTitle("Server Error");
 
     }
 
-    public RData then(ChangeListener select) {
-        this.changeListener = new ChangeListener() {
-            @Override
-            public void onSuccess(String change) {
-                if (change.contains("<br")) {
-                    WebView error=new WebView(ctx);
-                    error.loadData(change,"text/html","utf-8");
-                    serverError.setView(error).create().show();
-                } else select.onSuccess(change);
-            }
-
-            @Override
-            public void onFailure(String change) {
-                select.onFailure(change);
-            }
-        };
-        return this;
-    }
-
-    public RData rawQuery(String script) {
-        internetDaemon.setChangeListener(changeListener)
+    public RData rawQuery(String script, Callback callback) {
+        internetDaemon.setChangeListener((result, error) -> {
+                    if (error == null) {
+                        if (result.contains("<br")) {
+                            WebView view = new WebView(ctx);
+                            view.loadData(result, "text/html", "utf-8");
+                            serverError.setView(view)
+                                    .setPositiveButton("ok", (dialogInterface, i) -> {
+                                        Activity a = (Activity) ctx;
+                                        a.finish();
+                                    })
+                                    .create()
+                                    .show();
+                        } else callback.callback(result, null);
+                    } else callback.callback(null, error);
+                })
                 .execute(link, Utils.encode(new String[]{"username", "password", "database", "script"}, new String[]{username, password, database, script}));
 
         return null;
     }
 
-    public RData insert(String table, String[] columns, String[] values) {
+    public void insert(String table, String[] columns, String[] values, Callback callback) {
         StringBuilder script = new StringBuilder("insert into " + table + "(");
         for (String s :
                 columns) {
@@ -69,25 +64,23 @@ public class RData {
             script.append("\",");
         }
         script.append(")");
-        internetDaemon.setChangeListener(changeListener)
+        internetDaemon.setChangeListener(callback)
                 .execute(link, Utils.encode(new String[]{"username", "password", "database", "script"}, new String[]{username, password, database, script.toString()}));
-        return this;
     }
 
-    public RData update(String table, String set, String where) {
-        String script = "update "+table+" set "+set+" where "+where;
-        internetDaemon.setChangeListener(changeListener)
+    public RData update(String table, String set, String where, Callback callback) {
+        String script = "update " + table + " set " + set + " where " + where;
+        internetDaemon.setChangeListener(callback)
                 .execute(link, Utils.encode(new String[]{"username", "password", "database", "script"}, new String[]{username, password, database, script}));
 
         return this;
     }
 
-    public RData delete(String table, @NonNull String where) {
-        String script = "delete from " + table + " where "+where;
+    public void delete(String table, @NonNull String where, Callback callback) {
+        String script = "delete from " + table + " where " + where;
 
-        internetDaemon.setChangeListener(changeListener)
+        internetDaemon.setChangeListener(callback)
                 .execute(link, Utils.encode(new String[]{"username", "password", "database", "script"}, new String[]{username, password, database, script}));
 
-        return this;
     }
 }

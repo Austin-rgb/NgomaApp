@@ -13,37 +13,24 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
-public class InternetDaemon extends AsyncTask<String, String, String> {
-    ChangeListener changeListener;
+public class InternetDaemon extends AsyncTask<String, String, Result> {
+    Callback changeListener;
     String table;
 
     @Override
-    protected String doInBackground(String... strings) {
+    protected Result doInBackground(String... strings) {
         return getRemoteData(strings);
     }
 
-    protected void onPostExecute(String s) {
+    protected void onPostExecute(Result s) {
         super.onPostExecute(s);
-        if (Objects.equals(s, "//connection problem//") || Objects.equals(s, "//incorrect url//"))
-            changeListener.onFailure("//connection problem//");
-        else changeListener.onSuccess(s);
+        if (s.getE() == null)
+            changeListener.callback(s.getResult(), null);
+        else changeListener.callback(null, s.getE());
     }
 
-    public void connect(String... strings) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getRemoteData(strings);
-            }
-        });
-        thread.setDaemon(true);
-        thread.setName("internet");
-
-    }
-
-    private String getRemoteData(String[] strings) {
+    private Result getRemoteData(String[] strings) {
         URL url;
         StringBuilder result;
         try {
@@ -76,27 +63,38 @@ public class InternetDaemon extends AsyncTask<String, String, String> {
                 Log.i("InternetDaemon", result.toString());
             } catch (IOException e) {
                 Log.e("Internet daemon", "got response " + e.getMessage());
-                return "//connection problem//";
+                return new Result(null, e);
             }
             huc.disconnect();
         } catch (MalformedURLException e) {
             Log.e("Internet daemon", e.getMessage());
-            return "//incorrect url//";
+            return new Result(null, e);
         }
-        return result.toString();
+        return new Result(result.toString(), null);
     }
 
-    public InternetDaemon setChangeListener(ChangeListener changeListener) {
+    public InternetDaemon setChangeListener(Callback changeListener) {
         this.changeListener = changeListener;
         return this;
     }
 
-    public InternetDaemon forTable(String table) {
-        this.table = table;
-        return this;
+}
+
+class Result {
+    private final String result;
+    private final Exception e;
+
+    public Result(String result, Exception e) {
+
+        this.result = result;
+        this.e = e;
     }
 
-    public String forTable() {
-        return table;
+    public String getResult() {
+        return result;
+    }
+
+    public Exception getE() {
+        return e;
     }
 }

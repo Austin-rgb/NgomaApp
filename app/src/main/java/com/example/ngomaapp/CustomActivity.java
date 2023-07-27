@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,66 +20,72 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-public class CustomActivity extends AppCompatActivity implements ChangeListener {
-final String mainUrl = "http://127.0.0.1:8080/getdata.php";
-  final String testUrl = "/smi.php";
-  String table = null;
-    String parentTable=null;
-InternetDaemon internetDaemon;
-BottomNavigationView bottomNavigationView;
-ListView listView;
-ArrayList <String>arrayList;
-ArrayAdapter<String> arrayAdapter;
-FloatingActionButton floatingActionButton;
-protected void onCreate(Bundle b){
-  super.onCreate(b);
-  setContentView(R.layout.table);
-  internetDaemon=new InternetDaemon();
-  bottomNavigationView=findViewById(R.id.navigation);
-  arrayList=new ArrayList<>();
-  arrayAdapter=new ArrayAdapter<>(this,R.layout.listview,arrayList);
-  listView=findViewById(R.id.listview);
-  listView.setAdapter(arrayAdapter);
-  floatingActionButton=findViewById(R.id.actionButton);
-  internetDaemon.setChangeListener(this);
-}
+
+public class CustomActivity extends AppCompatActivity implements Callback {
+    final String testUrl = "/smi.php";
+    TextView status;
+    ProgressBar progressBar;
+    AlertDialog.Builder builder;
+    String table = null;
+    JSONArray jsonData = null;
+    BottomNavigationView bottomNavigationView;
+    ListView listView;
+    ArrayList<String> arrayList;
+    ArrayAdapter<String> arrayAdapter;
+    FloatingActionButton floatingActionButton;
+
+    protected void onCreate(Bundle b) {
+        super.onCreate(b);
+        setContentView(R.layout.table);
+        status = findViewById(R.id.status);
+        progressBar = findViewById(R.id.progressBar);
+        bottomNavigationView = findViewById(R.id.navigation);
+        arrayList = new ArrayList<>();
+        arrayAdapter = new ArrayAdapter<>(this, R.layout.listview, arrayList);
+        listView = findViewById(R.id.listview);
+        listView.setAdapter(arrayAdapter);
+        floatingActionButton = findViewById(R.id.actionButton);
+        builder = new AlertDialog.Builder(this);
+    }
 public boolean onCreateOptionsMenu(Menu menu){
   getMenuInflater().inflate(R.menu.menu,menu);
   return true;
 }
 public boolean onOptionsItemSelected(MenuItem menuItem){
-  switch (menuItem.getTitle().toString()){
-    case "About":
-      //To do
-  }
   return super.onOptionsItemSelected(menuItem);
 }
 
-  @Override
   public void onSuccess(String change) {
-    Log.i("CustomActivity","got remote data "+change);
-    try {
-      JSONArray jsonArray=new JSONArray(change);
-      for (int i = 0; i < jsonArray.length(); i++) {
-        JSONObject jsonObject=jsonArray.getJSONObject(i);
-        arrayList.add(jsonObject.getString(table));
+      status.setText(R.string.ready);
+      progressBar.setIndeterminate(false);
+      Log.i("CustomActivity", "got remote data " + change);
+      try {
+          jsonData = new JSONArray(change);
+          for (int i = 0; i < jsonData.length(); i++) {
+              JSONObject jsonObject = jsonData.getJSONObject(i);
+              arrayList.add(jsonObject.getString(table));
+          }
+      } catch (JSONException e) {
+          throw new RuntimeException(e);
       }
-    } catch (JSONException e) {
-      throw new RuntimeException(e);
+      arrayAdapter.notifyDataSetChanged();
+  }
+
+    public void onFailure(Exception change) {
+        status.setText(R.string.failed);
+        progressBar.setIndeterminate(false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(change.getMessage())
+                .setTitle("Network Error")
+                .setPositiveButton("Ok", (dialogInterface, i) -> finish());
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
     }
-    arrayAdapter.notifyDataSetChanged();
-    getSharedPreferences("data",0).edit().putString(internetDaemon.forTable(),change).apply();
-  }
 
-  @Override
-  public void onFailure(String change) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setMessage("Please connect to the internet.")
-            .setTitle("Network Error")
-            .setPositiveButton("Ok", (dialogInterface, i) -> finish());
-
-    AlertDialog dialog = builder.create();
-    dialog.setCancelable(false);
-    dialog.show();
-  }
+    @Override
+    public void callback(String result, Exception error) {
+        if (result != null) onSuccess(result);
+        else onFailure(error);
+    }
 }

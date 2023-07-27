@@ -1,6 +1,5 @@
 package com.example.ngomaapp;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -22,9 +21,13 @@ public class LoginActivity extends AppCompatActivity {
         EditText passwordInput = (EditText) findViewById(R.id.password);
         String email = emailInput.getText().toString();
         String password = passwordInput.getText().toString();
-        if (email=="" || password=="")return;
-        String login=server+"/smi.php";
-        InternetDaemon internetDaemon = new InternetDaemon();
+        if (email == "" || password == "") return;
+        else {
+            getSharedPreferences("credentials", 0).edit().putString("username", email).putString("password", password).apply();
+        }
+        //String login=server+"/smi.php";
+
+        /*InternetDaemon internetDaemon = new InternetDaemon();
         GData gData=new GData(this,login);
 
         gData.setChangeListener(new ChangeListener() {
@@ -32,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(String change) {
                 if (change.equals("")){
                     getSharedPreferences("credentials",0).edit()
-                            .putString("email",email)
+                            .putString("username",email)
                             .putString("password",password)
                             .putBoolean("loggedIn",true)
                             .apply();
@@ -59,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         }).rawQuery("select * from teachers where email="+email+",password="+password);
-        String post =Utils.encode(new String[]{"username","password"},new String[]{});
+        String post =Utils.encode(new String[]{"username","password"},new String[]{});*/
     }
 }
 

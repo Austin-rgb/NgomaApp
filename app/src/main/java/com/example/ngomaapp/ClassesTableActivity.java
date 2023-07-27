@@ -20,8 +20,10 @@ public class ClassesTableActivity extends CustomActivity {
         table = "class";
         //Check for availability of offline data
 
-        GData gData=new GData(this,testUrl);
-            gData.setChangeListener(this).rawQuery("select distinct class from questions");
+        GData gData = new GData(this, testUrl, "questions");
+        status.setText(R.string.loading);
+        progressBar.setIndeterminate(true);
+        gData.rawQuery("select distinct class from questions", this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(this, SubjectsTableActivity.class);
             TextView tv = (TextView) view;
@@ -43,19 +45,7 @@ public class ClassesTableActivity extends CustomActivity {
                             newName.selectAll();
                             builder.setTitle("RENAME")
                                     .setView(newName)
-                                    .setPositiveButton("OK", (dialogInterface, i1) -> {
-                                        gData.setChangeListener(new ChangeListener() {
-                                            @Override
-                                            public void onSuccess(String change) {
-
-                                            }
-
-                                            @Override
-                                            public void onFailure(String change) {
-
-                                            }
-                                        }).update("questions","class=\""+newName.getText().toString()+"\"","class=\""+textView.getText().toString()+"\"");
-                                    })
+                                    .setPositiveButton("OK", (dialogInterface, i1) -> gData.update("questions", "class=\"" + newName.getText().toString() + "\"", "class=\"" + textView.getText().toString() + "\"", null))
                                     .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
                                         //To do
                                     })
@@ -63,24 +53,7 @@ public class ClassesTableActivity extends CustomActivity {
                         case "Delete":
                             builder.setTitle("DELETE")
                                     .setMessage("Are you sure you want to delete " + textView.getText().toString())
-                                    .setPositiveButton("OK", (dialogInterface, i1) -> {
-                                        gData.setChangeListener(new ChangeListener() {
-                                            @Override
-                                            public void onSuccess(String change) {
-                                                AlertDialog.Builder builder1=new AlertDialog.Builder(ClassesTableActivity.this);
-                                                builder1.setTitle("Success")
-                                                        .setMessage("Successfully deleted "+textView.getText().toString())
-                                                        .create().show();
-                                            }
-
-                                            @Override
-                                            public void onFailure(String change) {
-
-                                            }
-                                        }).delete("questions","class="+textView.getText().toString());
-
-
-                                    })
+                                    .setPositiveButton("OK", (dialogInterface, i1) -> gData.delete("questions", "class=" + textView.getText().toString(), null))
                                     .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
                                         //To do
                                     })

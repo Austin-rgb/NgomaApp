@@ -26,40 +26,58 @@ public class SetupActivity extends AppCompatActivity {
         String serverAddress = "http://"+address;
         String setupUrl=serverAddress+"/setup.php";
         new InternetDaemon()
-                .setChangeListener(new ChangeListener() {
-                    @Override
-                    public void onSuccess(String change) {
-                        String username;
-                        String password;
-                        String database;
-                        try {
-                            JSONObject setup=new JSONObject(change);
-                            username=setup.getString("username");
-                            password=setup.getString("password");
-                            database=setup.getString("database");
+                .setChangeListener((result, error) -> {
+                    if (error == null) {
+                        {
+                            getSharedPreferences("credentials", 0)
+                                    .edit()
+                                    .putString("serverAddress", serverAddress)
+                                    .apply();
+                            new InternetDaemon()
+                                    .setChangeListener((result1, error1) -> {
+                                        if (error1 == null) {
+                                            {
 
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
+                                                String username;
+                                                String password;
+                                                String database;
+                                                try {
+                                                    JSONObject setup = new JSONObject(result1);
+                                                    username = setup.getString("username");
+                                                    password = setup.getString("password");
+                                                    database = setup.getString("database");
+
+                                                } catch (JSONException e) {
+                                                    throw new RuntimeException(e);
+                                                }
+                                                getSharedPreferences("credentials", 0)
+                                                        .edit()
+                                                        .putString("username", username)
+                                                        .putString("password", password)
+                                                        .putString("database", database)
+                                                        .putBoolean("serverNotSet", false)
+                                                        .apply();
+                                                finish();
+                                            }
+                                        } else {
+                                            new AlertDialog.Builder(SetupActivity.this)
+                                                    .setTitle("Connection problem")
+                                                    .setMessage(error1.getMessage())
+                                                    .create()
+                                                    .show();
+                                        }
+                                    })
+                                    .execute(setupUrl);
                         }
-                        getSharedPreferences("credentials", 0)
-                                .edit()
-                                .putString("serverAddress", serverAddress)
-                                .putString("username",username)
-                                .putString("password",password)
-                                .putString("database",database)
-                                .putBoolean("serverNotSet", false)
-                                .apply();
-                        finish();
-                    }
-                    @Override
-                    public void onFailure(String change) {
+                    } else {
                         new AlertDialog.Builder(SetupActivity.this)
                                 .setTitle("Connection problem")
-                                .setMessage("Could not effectively connect to " + serverAddress)
+                                .setMessage(error.getMessage())
                                 .create()
                                 .show();
                     }
                 })
-                .execute(setupUrl);
+
+                .execute(serverAddress);
     }
 }

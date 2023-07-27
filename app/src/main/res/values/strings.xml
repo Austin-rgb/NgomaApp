@@ -81,4 +81,8 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="versionSeparator">\??</string>
+    <string name="progress">Progress</string>
+    <string name="ready">Ready</string>
+    <string name="failed">Failed</string>
+    <string name="loading">Loading</string>
 </resources>
