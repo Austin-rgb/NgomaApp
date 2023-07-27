@@ -21,8 +21,8 @@ public class QuestionsTableActivity extends CustomActivity {
         String form = getIntent().getStringExtra("class");
         String subject = getIntent().getStringExtra("subject");
         String topic = getIntent().getStringExtra("topic");
-        GData gData = new GData(this, testUrl, "questions");
-        gData.rawQuery("select question,question_id from questions where class=\"" + form + "\" and subject=\"" + subject + "\" and topic=\"" + topic + "\"", this);
+        GData gData = new GData(this, testUrl, "questions", false);
+        gData.rawQuery("select class,subject,topic,question,question_id from questions where class=\"" + form + "\" and subject=\"" + subject + "\" and topic=\"" + topic + "\"", this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(this, AnswerActivity.class);
             TextView tv = (TextView) view;

@@ -67,7 +67,7 @@ public class InternetDaemon extends AsyncTask<String, String, Result> {
             }
             huc.disconnect();
         } catch (MalformedURLException e) {
-            Log.e("Internet daemon", e.getMessage());
+            Log.e("Internet daemon", "MalformedURLException " + e.getMessage());
             return new Result(null, e);
         }
         return new Result(result.toString(), null);

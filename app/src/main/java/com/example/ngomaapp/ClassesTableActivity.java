@@ -20,7 +20,7 @@ public class ClassesTableActivity extends CustomActivity {
         table = "class";
         //Check for availability of offline data
 
-        GData gData = new GData(this, testUrl, "questions");
+        GData gData = new GData(this, testUrl, "questions", false);
         status.setText(R.string.loading);
         progressBar.setIndeterminate(true);
         gData.rawQuery("select distinct class from questions", this);

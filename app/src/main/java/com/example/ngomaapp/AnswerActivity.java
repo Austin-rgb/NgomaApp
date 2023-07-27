@@ -17,18 +17,18 @@ public class AnswerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String serverAddress = getSharedPreferences("credentials", 0).getString("serverAddress", "127.0.0.1");
-        String url = serverAddress + "/smi.php";
         String id = getIntent().getStringExtra("id");
-        GData data = new GData(this, url, "answers");
+        GData data = new GData(this, "/smi.php", "answers", false);
         LinearLayout linearLayout = new LinearLayout(this);
         Button button = new Button(this);
         button.setText(R.string.back);
         button.setOnClickListener(view -> finish());
-        linearLayout.addView(button);
-        setContentView(linearLayout);
         TextView textView = new TextView(this);
         WebView webView = new WebView(this);
+        linearLayout.addView(button);
+        linearLayout.addView(textView);
+        linearLayout.addView(webView);
+        setContentView(linearLayout);
         data.rawQuery("select text,link from answers where question_id=" + id, (result, error) -> {
             if (error == null) {
                 JSONObject jsonObject;

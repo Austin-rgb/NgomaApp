@@ -15,8 +15,8 @@ public class SubjectsTableActivity extends CustomActivity {
         setTitle("Subjects");
         table = "subject";
         String form = getIntent().getStringExtra("class");
-        GData gData = new GData(this, testUrl, "questions");
-        gData.rawQuery("select distinct subject from questions where class=\"" + form + "\"", this);
+        GData gData = new GData(this, testUrl, "questions", false);
+        gData.rawQuery("select distinct subject from questions where class=\'" + form + "\'", this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(this, TopicsTableActivity.class);
             TextView tv = (TextView) view;

@@ -44,9 +44,12 @@ public class RData {
                                     .show();
                         } else callback.callback(result, null);
                     } else callback.callback(null, error);
-                })
-                .execute(link, Utils.encode(new String[]{"username", "password", "database", "script"}, new String[]{username, password, database, script}));
+        });
+        try {
+            internetDaemon.execute(link, Utils.encode(new String[]{"username", "password", "database", "script"}, new String[]{username, password, database, script}));
+        } catch (Exception ignored) {
 
+        }
         return null;
     }
 

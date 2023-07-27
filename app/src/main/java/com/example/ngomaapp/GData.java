@@ -10,13 +10,15 @@ import org.json.JSONObject;
 
 public class GData {
     Context ctx;
+    private final Boolean backup;
     LData lData;
     RData rData;
     String table;
     String link, username, password, database;
 
-    public GData(Context context, String link, String table) {
+    public GData(Context context, String link, String table, Boolean backup) {
         this.ctx = context;
+        this.backup = backup;
         SharedPreferences sharedPreferences = context.getSharedPreferences("credentials", 0);
         String serverAddress = sharedPreferences.getString("serverAddress", "http://127.0.0.1:8080");
         this.link = serverAddress + link;
@@ -27,7 +29,6 @@ public class GData {
         rData = new RData(context, this.link, username, password, this.database);
         lData = new LData(context, database, null, 1);
     }
-
     public GData rawQuery(String query, Callback callback) {
         Log.i("GData", "rawQuery " + query);
         lData.rawQuery(query, (result, error) -> {
@@ -50,7 +51,7 @@ public class GData {
                                 for (int j = 0; j < names.length(); j++) {
                                     values[j] = object.getString(columns[j]);
                                 }
-                                lData.insert(table, columns, values, null);
+                                if (backup) lData.insert(table, columns, values, null);
                             }
                             callback.callback(result1, null);
                         } catch (JSONException e) {
