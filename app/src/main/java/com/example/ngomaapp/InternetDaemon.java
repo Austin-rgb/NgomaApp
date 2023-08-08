@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 
 public class InternetDaemon extends AsyncTask<String, String, Result> {
     Callback changeListener;
-    String table;
 
     @Override
     protected Result doInBackground(String... strings) {
@@ -25,9 +24,9 @@ public class InternetDaemon extends AsyncTask<String, String, Result> {
 
     protected void onPostExecute(Result s) {
         super.onPostExecute(s);
-        if (s.getE() == null)
+        if (s.getE() == null) {
             changeListener.callback(s.getResult(), null);
-        else changeListener.callback(null, s.getE());
+        } else changeListener.callback(null, s.getE());
     }
 
     private Result getRemoteData(String[] strings) {
@@ -63,12 +62,12 @@ public class InternetDaemon extends AsyncTask<String, String, Result> {
                 Log.i("InternetDaemon", result.toString());
             } catch (IOException e) {
                 Log.e("Internet daemon", "IOException " + e.getMessage());
-                return new Result(null, e);
+                return new Result(null, new NgomaException("IOException ", e.getMessage()));
             }
             huc.disconnect();
         } catch (MalformedURLException e) {
             Log.e("Internet daemon", "MalformedURLException " + e.getMessage());
-            return new Result(null, e);
+            return new Result(null, new NgomaException("MalformedURLException ", e.getMessage()));
         }
         return new Result(result.toString(), null);
     }
@@ -82,9 +81,9 @@ public class InternetDaemon extends AsyncTask<String, String, Result> {
 
 class Result {
     private final String result;
-    private final Exception e;
+    private final NgomaException e;
 
-    public Result(String result, Exception e) {
+    public Result(String result, NgomaException e) {
 
         this.result = result;
         this.e = e;
@@ -94,7 +93,7 @@ class Result {
         return result;
     }
 
-    public Exception getE() {
+    public NgomaException getE() {
         return e;
     }
 }

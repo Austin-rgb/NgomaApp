@@ -71,20 +71,14 @@ public boolean onOptionsItemSelected(MenuItem menuItem){
       arrayAdapter.notifyDataSetChanged();
   }
 
-    public void onFailure(Exception change) {
+    public void onFailure(NgomaException change) {
         status.setText(R.string.failed);
         progressBar.setIndeterminate(false);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(change.getMessage())
-                .setTitle("Network Error")
-                .setPositiveButton("Ok", (dialogInterface, i) -> finish());
-        AlertDialog dialog = builder.create();
-        dialog.setCancelable(false);
-        dialog.show();
+        Utils.showError(this, change);
     }
 
     @Override
-    public void callback(String result, Exception error) {
+    public void callback(String result, NgomaException error) {
         if (result != null) onSuccess(result);
         else onFailure(error);
     }

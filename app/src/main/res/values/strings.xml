@@ -85,4 +85,9 @@
     <string name="ready">Ready</string>
     <string name="failed">Failed</string>
     <string name="loading">Loading</string>
+    <string name="paymentRequest">Pay ksh 500 mpesa paybill 123456 account number as your email and use the transaction id that comes with the confirmation message</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="submit">SUBMIT</string>
+    <string name="transaction_id">Transaction Id</string>
 </resources>

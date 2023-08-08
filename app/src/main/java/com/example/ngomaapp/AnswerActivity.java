@@ -1,5 +1,6 @@
 package com.example.ngomaapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -7,13 +8,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AnswerActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,13 +44,23 @@ public class AnswerActivity extends AppCompatActivity {
                     throw new RuntimeException(e);
                 }
             } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Error occurred")
-                        .setMessage(error.getMessage())
-                        .create()
-                        .show();
+                String errorMessage = error.getMessage();
+                if (errorMessage.contains("denied")) {
+                    startActivityForResult(new Intent(this, PremiumSetup.class), 2);
+                } else {
+                    Utils.showError(this, error);
+                }
+
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == 2) {
+            onRestart();
+        }
     }
 }

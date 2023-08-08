@@ -33,23 +33,27 @@ public class LData extends SQLiteOpenHelper {
 
     }
 
+    public void execSQL(String sql) {
+        this.getWritableDatabase().execSQL(sql);
+    }
+
     public LData rawQuery(String query, Callback callback) {
         Cursor cursor = null;
         try {
             cursor = this.getWritableDatabase().rawQuery(query, null);
         } catch (Exception e) {
             Log.e("LData", e.getMessage());
-            callback.callback(null, e);
+            callback.callback(null, new NgomaException("Database error", e.getMessage()));
             return this;
         }
 
         if (cursor == null) {
-            callback.callback(null, new Exception("No data"));
+            callback.callback(null, new NgomaException("Database error", "No data fpr table requsted"));
             return this;
         }
         String[] columns = cursor.getColumnNames();
         if (columns.length == 1 || cursor.getCount() < 1) {
-            callback.callback(null, new Exception("No data"));
+            callback.callback(null, new NgomaException("Database error", "No data"));
             return this;
         }
 
@@ -70,7 +74,7 @@ public class LData extends SQLiteOpenHelper {
         try {
             callback.callback(String.valueOf(new JSONArray(jsonArray.toString())), null);
         } catch (JSONException e) {
-            callback.callback(null, new Exception("Could not parse the data returned from the database"));
+            callback.callback(null, new NgomaException("Database error", "Could not parse the data returned from the database"));
         }
         cursor.close();
         return this;
@@ -85,7 +89,7 @@ public class LData extends SQLiteOpenHelper {
         long r = database.insert(table, null, contentValues);
         database.close();
         if (r < 0)
-            callback.callback(null, new Exception("Could not insert data into the local database"));
+            callback.callback(null, new NgomaException("Database error", "Could not insert data into the local database"));
 
     }
 

@@ -21,7 +21,7 @@ public class QuestionsTableActivity extends CustomActivity {
         String form = getIntent().getStringExtra("class");
         String subject = getIntent().getStringExtra("subject");
         String topic = getIntent().getStringExtra("topic");
-        GData gData = new GData(this, testUrl, "questions", false);
+        GData gData = new GData(this, testUrl, "questions", true);
         gData.rawQuery("select class,subject,topic,question,question_id from questions where class=\"" + form + "\" and subject=\"" + subject + "\" and topic=\"" + topic + "\"", this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(this, AnswerActivity.class);
@@ -36,10 +36,6 @@ public class QuestionsTableActivity extends CustomActivity {
                         break;
                     }
                 } catch (JSONException e) {
-                    builder.setTitle("JSON Error")
-                            .setMessage(e.getMessage())
-                            .create()
-                            .show();
                     Log.e("QuestionsTableActivity", e.getMessage());
                 }
             }

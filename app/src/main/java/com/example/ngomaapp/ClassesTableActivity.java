@@ -16,6 +16,7 @@ public class ClassesTableActivity extends CustomActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.setTestData(this);
         setTitle("Classes");
         table = "class";
         //Check for availability of offline data

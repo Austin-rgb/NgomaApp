@@ -55,7 +55,7 @@ public class GData {
                             }
                             callback.callback(result1, null);
                         } catch (JSONException e) {
-                            callback.callback(null, e);
+                            callback.callback(null, new NgomaException("Json error", e.getMessage()));
                             Log.e("GData", e.getMessage());
                         }
                     } else {
