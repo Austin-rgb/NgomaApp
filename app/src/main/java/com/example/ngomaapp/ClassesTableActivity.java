@@ -12,7 +12,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 public class ClassesTableActivity extends CustomActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,17 +69,14 @@ public class ClassesTableActivity extends CustomActivity {
             bottomNavigationView.getMenu().removeItem(0);
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         return super.onOptionsItemSelected(menuItem);
     }
-
 }

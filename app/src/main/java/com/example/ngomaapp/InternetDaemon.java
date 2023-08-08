@@ -24,9 +24,9 @@ public class InternetDaemon extends AsyncTask<String, String, Result> {
 
     protected void onPostExecute(Result s) {
         super.onPostExecute(s);
-        if (s.getE() == null) {
-            changeListener.callback(s.getResult(), null);
-        } else changeListener.callback(null, s.getE());
+        if (s.e() == null) {
+            changeListener.callback(s.result(), null);
+        } else changeListener.callback(null, s.e());
     }
 
     private Result getRemoteData(String[] strings) {
@@ -79,21 +79,5 @@ public class InternetDaemon extends AsyncTask<String, String, Result> {
 
 }
 
-class Result {
-    private final String result;
-    private final NgomaException e;
-
-    public Result(String result, NgomaException e) {
-
-        this.result = result;
-        this.e = e;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-    public NgomaException getE() {
-        return e;
-    }
+record Result(String result, NgomaException e) {
 }

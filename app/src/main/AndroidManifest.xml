@@ -31,7 +31,6 @@
         <activity android:name=".QuestionsTableActivity" />
         <activity android:name=".AnswerActivity" />
         <activity android:name="com.example.ngomaapp.SetupActivity" />
-        <activity android:name="com.example.ngomaapp.PremiumSetup" />
     </application>
 
 </manifest>
