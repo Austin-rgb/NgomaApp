@@ -19,7 +19,8 @@
         <service
             android:name=".UtilityService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="false"
+            android:permission="TODO" />
 
         <activity android:name=".LoginActivity" />
         <activity

@@ -73,8 +73,12 @@ public class LData extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         long r = database.insert(table, null, contentValues);
         database.close();
+        if (callback == null) {
+            return;
+        }
         if (r < 0)
             callback.callback(null, new NgomaException("Database error", "Could not insert data into the local database"));
+        else callback.callback("Success", null);
     }
 
     public LData update(String table, String[] columns, String[] values, String where, String[] fields) {
