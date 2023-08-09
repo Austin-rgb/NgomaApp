@@ -2,24 +2,32 @@ package com.example.ngomaapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Objects;
 import java.util.Scanner;
 
-public class Utils {
-    public static String encode(String[] keys,String[] values){
+public enum Utils {
+    ;
+
+    public static String encode(String[] keys, String[] values) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < keys.length; i++) {
+            if (i != 0) result.append("&");
             try {
-                if (i != 0) result.append("&");
                 result.append(URLEncoder.encode(keys[i], "UTF-8")).append("=").append(URLEncoder.encode(values[i], "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                Log.e("Utils.encode", e.getMessage());
+                throw new RuntimeException(e);
             }
         }
         Log.i("Utils.encode", "successfully encoded " + result);
@@ -34,6 +42,7 @@ public class Utils {
     }
 
     public static void showError(Context context, NgomaException error) {
+        Log.i("Showing error", error.getMessage());
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(error.getTitle())
                 .setPositiveButton("OK", (dialogInterface, i) -> {
@@ -47,23 +56,71 @@ public class Utils {
         dialog.show();
     }
 
-    public static void showWarning(Context context, NgomaException error) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(error.getTitle())
-                .setMessage(error.getMessage())
-                .create()
-                .show();
-    }
-
-    public static void setTestData(Context context) {
-        LData lData = new LData(context, "ngomatest", null, 0);
+    public static void setTestData(Context context, Callback callback) {
+        Log.i("Utils", "setting up test data");
         try {
-            Scanner scanner = new Scanner(context.getAssets().open("testData.sql"));
-            StringBuilder stringBuilder = new StringBuilder();
-            while (scanner.hasNext()) stringBuilder.append(scanner.next());
-            lData.execSQL(stringBuilder.toString());
+            inflateAsset2sqlite(context, "questions.json", callback);
+            inflateAsset2sqlite(context, "answers.json", callback);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static void inflateAsset2sqlite(Context context, String asset, Callback callback) throws IOException {
+        LData lData = new LData(context, "ngomatest", null, 1);
+        try (Scanner scanner = new Scanner(context.getAssets().open(asset))) {
+            StringBuilder stringBuilder = new StringBuilder();
+            while (scanner.hasNext()) stringBuilder.append(scanner.nextLine());
+            JSONArray jsonArray = new JSONArray(stringBuilder.toString());
+            for (int i = 0; i < jsonArray.length(); i++) {
+                ExtendedJSONObj jsonObj = new ExtendedJSONObj(jsonArray.get(i).toString());
+                lData.insert(asset.replaceAll("\\.json", ""), jsonObj.getNames(), jsonObj.getValues(), callback);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static JSONArray cursor2json(Cursor cursor) {
+        JSONArray jsonArray = new JSONArray();
+        while (cursor.moveToNext()) {
+            JSONObject jsonObject = new JSONObject();
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                try {
+                    jsonObject.put(cursor.getColumnName(i), cursor.getString(i));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray;
+    }
+
+}
+
+class ExtendedJSONObj extends JSONObject {
+    public ExtendedJSONObj(String s) throws JSONException {
+        super(s);
+    }
+
+    public String[] getNames() throws JSONException {
+        JSONArray jsonArray = names();
+        String[] strings = new String[Objects.requireNonNull(jsonArray).length()];
+        for (int i = 0; i < jsonArray.length(); i++) {
+            strings[i] = jsonArray.getString(i);
+        }
+        return strings;
+    }
+
+    public String[] getValues() throws JSONException {
+        JSONArray jsonArray = names();
+        String[] names,
+                values = new String[Objects.requireNonNull(jsonArray).length()];
+        names = getNames();
+        for (int i = 0; i < names.length; i++) {
+            values[i] = get(names[i]).toString();
+        }
+        return values;
     }
 }

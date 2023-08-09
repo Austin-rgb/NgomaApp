@@ -15,7 +15,12 @@ public class ClassesTableActivity extends CustomActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.setTestData(this);
+        if (getSharedPreferences("testApp", 0).getBoolean("testData", true))
+            Utils.setTestData(this, (result, error) -> {
+                if (result == null) Utils.showError(this, error);
+                else
+                    getSharedPreferences("testApp", 0).edit().putBoolean("testData", false).apply();
+            });
         setTitle("Classes");
         table = "class";
         //Check for availability of offline data
@@ -39,7 +44,7 @@ public class ClassesTableActivity extends CustomActivity {
                 popupMenu.setOnMenuItemClickListener(menuItem -> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ClassesTableActivity.this);
                     switch (menuItem.getTitle().toString()) {
-                        case "Rename":
+                        case "Rename" -> {
                             EditText newName = new EditText(ClassesTableActivity.this);
                             newName.setText(textView.getText());
                             newName.selectAll();
@@ -50,14 +55,14 @@ public class ClassesTableActivity extends CustomActivity {
                                         //To do
                                     })
                                     .create().show();
-                        case "Delete":
-                            builder.setTitle("DELETE")
-                                    .setMessage("Are you sure you want to delete " + textView.getText().toString())
-                                    .setPositiveButton("OK", (dialogInterface, i1) -> gData.delete("questions", "class=" + textView.getText().toString(), null))
-                                    .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
-                                        //To do
-                                    })
-                                    .create().show();
+                        }
+                        case "Delete" -> builder.setTitle("DELETE")
+                                .setMessage("Are you sure you want to delete " + textView.getText().toString())
+                                .setPositiveButton("OK", (dialogInterface, i1) -> gData.delete("questions", "class=" + textView.getText().toString(), null))
+                                .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
+                                    //To do
+                                })
+                                .create().show();
                     }
                     return true;
                 });

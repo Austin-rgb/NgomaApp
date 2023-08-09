@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+
 public class LData extends SQLiteOpenHelper {
     String databaseName;
     Context context;
@@ -26,40 +28,27 @@ public class LData extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("create table questions(question_id int,question text,topic tiny_text,subject tiny_text,class tiny_text,upload_date date default current_timestamp,teacher varchar(64))");
+        sqLiteDatabase.execSQL("create table answers(question_id int,answer text,link varchar(64))");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
-    }
-
-    public void execSQL(String sql) {
-        this.getWritableDatabase().execSQL(sql);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS questions");
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS answers");
     }
 
     public LData rawQuery(String query, Callback callback) {
-        Cursor cursor = null;
-        try {
-            cursor = this.getWritableDatabase().rawQuery(query, null);
-        } catch (Exception e) {
-            Log.e("LData", e.getMessage());
-            callback.callback(null, new NgomaException("Database error", e.getMessage()));
-            return this;
-        }
-
-        if (cursor == null) {
-            callback.callback(null, new NgomaException("Database error", "No data fpr table requsted"));
-            return this;
-        }
+        Cursor cursor = this.getWritableDatabase().rawQuery(query, null);
         String[] columns = cursor.getColumnNames();
-        if (columns.length == 1 || cursor.getCount() < 1) {
+        if (cursor.getCount() < 1) {
             callback.callback(null, new NgomaException("Database error", "No data"));
+            Log.e("LData", "No data");
             return this;
         }
-
-        StringBuilder jsonArray = new StringBuilder();
-        jsonArray.append("[");
-        while (cursor.moveToNext()) {
+        Log.i("LData", " Got data " + cursor);
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
             JSONObject jsonObject = new JSONObject();
             for (int j = 0; j < columns.length; j++) {
                 try {
@@ -68,19 +57,15 @@ public class LData extends SQLiteOpenHelper {
                     throw new RuntimeException(e);
                 }
             }
-            jsonArray.append(jsonObject);
+            jsonArray.put(jsonObject);
         }
-        jsonArray.append("]");
-        try {
-            callback.callback(String.valueOf(new JSONArray(jsonArray.toString())), null);
-        } catch (JSONException e) {
-            callback.callback(null, new NgomaException("Database error", "Could not parse the data returned from the database"));
-        }
+        callback.callback(jsonArray.toString(), null);
         cursor.close();
         return this;
     }
 
     public void insert(String table, String[] columns, String[] values, Callback callback) {
+        Log.i("LData", "inserting into " + table + " " + Arrays.toString(columns) + " " + Arrays.toString(values));
         ContentValues contentValues = new ContentValues();
         for (int i = 0; i < columns.length; i++) {
             contentValues.put(columns[i], values[i]);
@@ -90,10 +75,9 @@ public class LData extends SQLiteOpenHelper {
         database.close();
         if (r < 0)
             callback.callback(null, new NgomaException("Database error", "Could not insert data into the local database"));
-
     }
 
-    public LData update(String table, String[] columns, String[] values, String where, String[] fields, Callback callback) {
+    public LData update(String table, String[] columns, String[] values, String where, String[] fields) {
         ContentValues contentValues = new ContentValues();
         for (int i = 0; i < columns.length; i++) {
             contentValues.put(columns[i], values[i]);
@@ -102,7 +86,7 @@ public class LData extends SQLiteOpenHelper {
         return this;
     }
 
-    public void delete(String table, String where, String[] whereArgs, Callback callback) {
+    public void delete(String table, String where, String[] whereArgs) {
         this.getWritableDatabase().delete(table, where, whereArgs);
     }
 }

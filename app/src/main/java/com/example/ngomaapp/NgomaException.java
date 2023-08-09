@@ -9,5 +9,4 @@ public class NgomaException extends Exception {
     public String getTitle() {
         return title;
     }
-
 }

@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class InternetDaemon extends AsyncTask<String, String, Result> {
     Callback changeListener;
@@ -79,5 +80,42 @@ public class InternetDaemon extends AsyncTask<String, String, Result> {
 
 }
 
-record Result(String result, NgomaException e) {
+final class Result {
+    private final String result;
+    private final NgomaException e;
+
+    Result(String result, NgomaException e) {
+        this.result = result;
+        this.e = e;
+    }
+
+    public String result() {
+        return result;
+    }
+
+    public NgomaException e() {
+        return e;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (Result) obj;
+        return Objects.equals(this.result, that.result) &&
+                Objects.equals(this.e, that.e);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(result, e);
+    }
+
+    @Override
+    public String toString() {
+        return "Result[" +
+                "result=" + result + ", " +
+                "e=" + e + ']';
+    }
+
 }

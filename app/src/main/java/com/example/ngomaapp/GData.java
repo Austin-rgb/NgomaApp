@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Objects;
+
 public class GData {
     Context ctx;
     private final Boolean backup;
@@ -15,6 +17,13 @@ public class GData {
     RData rData;
     String table;
     String link, username, password, database;
+
+    public GData(Context context, GDataConf conf) {
+        this.ctx = context;
+        this.backup = conf.backup();
+        this.link = conf.link();
+        this.table = conf.table();
+    }
 
     public GData(Context context, String link, String table, Boolean backup) {
         this.ctx = context;
@@ -97,7 +106,7 @@ public class GData {
                     localWhere.append(strings[0]).append("=?");
                     fields[i] = strings[1];
                 }
-                lData.update(table, columns, values, where, fields, callback);
+                lData.update(table, columns, values, where, fields);
             }
         });
 
@@ -115,10 +124,66 @@ public class GData {
                     localWhere.append(s[0]).append("=?");
                     whereArgs[i] = s[1];
                 }
-                lData.delete(table, localWhere.toString(), whereArgs, callback);
+                lData.delete(table, localWhere.toString(), whereArgs);
             } else
                 callback.callback(null, error);
         });
 
     }
+}
+
+final class GDataConf {
+    private final String link;
+    private final String table;
+    private final Boolean backup;
+    private final Boolean offline;
+
+    GDataConf(String link, String table, Boolean backup, Boolean offline) {
+        this.link = link;
+        this.table = table;
+        this.backup = backup;
+        this.offline = offline;
+    }
+
+    public String link() {
+        return link;
+    }
+
+    public String table() {
+        return table;
+    }
+
+    public Boolean backup() {
+        return backup;
+    }
+
+    public Boolean offline() {
+        return offline;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (GDataConf) obj;
+        return Objects.equals(this.link, that.link) &&
+                Objects.equals(this.table, that.table) &&
+                Objects.equals(this.backup, that.backup) &&
+                Objects.equals(this.offline, that.offline);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(link, table, backup, offline);
+    }
+
+    @Override
+    public String toString() {
+        return "GDataConf[" +
+                "link=" + link + ", " +
+                "table=" + table + ", " +
+                "backup=" + backup + ", " +
+                "offline=" + offline + ']';
+    }
+
 }

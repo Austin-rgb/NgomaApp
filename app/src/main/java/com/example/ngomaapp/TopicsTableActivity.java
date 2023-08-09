@@ -17,7 +17,7 @@ protected void onCreate(Bundle savedInstanceState) {
     String form = getIntent().getStringExtra("class");
     String subject = getIntent().getStringExtra("subject");
     GData gData = new GData(this, testUrl, "questions", false);
-    gData.rawQuery("select distinct topic from questions where class=\"" + form + "\" and " + "subject=\"" + subject + "\"", this);
+    gData.rawQuery("select distinct topic from questions where class=\'" + form + "\' and " + "subject=\'" + subject + "\'", this);
     listView.setOnItemClickListener((adapterView, view, i, l) -> {
         Intent intent = new Intent(this, QuestionsTableActivity.class);
         TextView tv = (TextView) view;
