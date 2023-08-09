@@ -1,5 +1,6 @@
 package com.example.ngomaapp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.WebView;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import java.util.Objects;
 
 public class AnswerActivity extends AppCompatActivity {
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +34,7 @@ public class AnswerActivity extends AppCompatActivity {
         TextView webViewTitle = new TextView(this);
         webViewTitle.setText(R.string.webviewtitle);
         WebView webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
         linearLayout.addView(button);
         linearLayout.addView(textView);
         linearLayout.addView(webViewTitle);
