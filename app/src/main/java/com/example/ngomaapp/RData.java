@@ -1,20 +1,16 @@
 package com.example.ngomaapp;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 
 public class RData {
 
-    Context ctx;
     String link;
     String username;
     String password;
     String database;
     InternetDaemon internetDaemon;
 
-    public RData(Context context, String link, String username, String password, String database) {
-        this.ctx = context;
+    public RData(String link, String username, String password, String database) {
         this.link = link;
         this.username = username;
         this.password = password;

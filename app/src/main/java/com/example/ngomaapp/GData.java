@@ -35,7 +35,7 @@ public class GData {
         this.password = sharedPreferences.getString("password", "student");
         this.database = sharedPreferences.getString("database", "ngomatest");
         this.table = table;
-        rData = new RData(context, this.link, username, password, this.database);
+        rData = new RData(this.link, username, password, this.database);
         lData = new LData(context, database, null, 1);
     }
     public GData rawQuery(String query, Callback callback) {

@@ -23,8 +23,6 @@ public class ClassesTableActivity extends CustomActivity {
             });
         setTitle("Classes");
         table = "class";
-        //Check for availability of offline data
-
         GData gData = new GData(this, testUrl, "questions", false);
         status.setText(R.string.loading);
         progressBar.setIndeterminate(true);
@@ -69,7 +67,6 @@ public class ClassesTableActivity extends CustomActivity {
                 popupMenu.show();
                 return true;
             });
-            // }
             bottomNavigationView.setOnNavigationItemSelectedListener(item -> false);
             bottomNavigationView.getMenu().removeItem(0);
         }
