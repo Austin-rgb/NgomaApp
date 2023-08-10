@@ -40,7 +40,9 @@ public class AnswerActivity extends AppCompatActivity {
         linearLayout.addView(webViewTitle);
         linearLayout.addView(webView);
         setContentView(linearLayout);
-        data.rawQuery("select answer,link from answers where question_id=" + id, (result, error) -> {
+        Control control = (Control) getIntent().getSerializableExtra("control");
+        control.setContext(this);
+        control.getAnswer((result, error) -> {
             if (error == null) {
 
                 JSONObject jsonObject;

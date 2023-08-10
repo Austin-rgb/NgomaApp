@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 public class CustomActivity extends AppCompatActivity implements Callback {
     final String testUrl = "/smi.php";
+    Control control;
     TextView status;
     ProgressBar progressBar;
     AlertDialog.Builder builder;
@@ -36,10 +37,23 @@ public class CustomActivity extends AppCompatActivity implements Callback {
 
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        control = (Control) getIntent().getSerializableExtra("control");
         setContentView(R.layout.table);
         status = findViewById(R.id.status);
         progressBar = findViewById(R.id.progressBar);
         bottomNavigationView = findViewById(R.id.navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getTitle().toString()) {
+                case "Next": {
+                    control.next();
+                }
+                break;
+                case "Previous": {
+                    control.previous();
+                }
+            }
+            return true;
+        });
         arrayList = new ArrayList<>();
         arrayAdapter = new ArrayAdapter<>(this, R.layout.listview, arrayList);
         listView = findViewById(R.id.listview);

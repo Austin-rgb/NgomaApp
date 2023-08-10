@@ -40,12 +40,7 @@ public class LData extends SQLiteOpenHelper {
     public LData rawQuery(String query, Callback callback) {
         Cursor cursor = this.getWritableDatabase().rawQuery(query, null);
         String[] columns = cursor.getColumnNames();
-        if (cursor.getCount() < 1) {
-            callback.callback(null, new NgomaException("Database error", "No data"));
-            Log.e("LData", "No data");
-            return this;
-        }
-        Log.i("LData", " Got data " + cursor);
+        Log.i("LData", " Querying " + query);
         JSONArray jsonArray = new JSONArray();
         for (int i = 0; i < cursor.getCount(); i++) {
             cursor.moveToPosition(i);

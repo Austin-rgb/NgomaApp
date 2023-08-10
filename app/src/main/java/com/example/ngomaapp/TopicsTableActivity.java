@@ -14,14 +14,14 @@ protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setTitle("Topics");
     table = "topic";
-    String form = getIntent().getStringExtra("class");
-    String subject = getIntent().getStringExtra("subject");
-    GData gData = new GData(this, testUrl, "questions", false);
-    gData.rawQuery("select distinct topic from questions where class=\'" + form + "\' and " + "subject=\'" + subject + "\'", this);
+    control.setContext(this);
+    control.getTopics(this);
+    // gData.rawQuery("select distinct topic from questions where class=\'" + form + "\' and " + "subject=\'" + subject + "\'", this);
     listView.setOnItemClickListener((adapterView, view, i, l) -> {
         Intent intent = new Intent(this, QuestionsTableActivity.class);
         TextView tv = (TextView) view;
-        intent.putExtra("class", form).putExtra("subject", subject).putExtra("topic", tv.getText().toString());
+        control.chooseTopic(tv.getText().toString());
+        intent.putExtra("control", control);
         startActivity(intent);
     });
     if (getSharedPreferences("credentials", 0).getBoolean("logged in", false)) {
@@ -35,36 +35,22 @@ protected void onCreate(Bundle savedInstanceState) {
         switch (menuItem.getTitle().toString()) {
           case "Rename":
             EditText newName = new EditText(TopicsTableActivity.this);
-            newName.setText(textView.getText());
-            newName.selectAll();
-            builder.setTitle("RENAME")
-                    .setView(newName)
-                    .setPositiveButton("OK", (dialogInterface, i1) -> {
-                        gData.update("questions", "class=\"" + newName.getText().toString() + "\"", "class=\"" + textView.getText().toString() + "\"", (result, error) -> {
-                            if (result != null) {
-                                AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-                                builder1.setTitle("Success")
-                                        .setMessage("successfully updated " + textView.getText().toString())
-                                        .create()
-                                        .show();
-                            } else {
-                                AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-                                builder1.setTitle("Failed")
-                                        .setMessage("could not delete " + textView.getText().toString())
-                                        .create()
-                                        .show();
-                            }
-                        });
-                    })
-                    .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
-                      //To do
-                    })
-                    .create().show();
-          case "Delete":
-            builder.setTitle("DELETE")
-                    .setMessage("Are you sure you want to delete " + textView.getText().toString())
-                    .setPositiveButton("OK", (dialogInterface, i1) -> {
-                        gData.delete("questions", "class=" + form + " subject=" + textView.getText().toString(), (result, error) -> {
+              newName.setText(textView.getText());
+              newName.selectAll();
+              builder.setTitle("RENAME")
+                      .setView(newName)
+                      .setPositiveButton("OK", (dialogInterface, i1) -> {
+                      })
+                      .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
+                          //To do
+                      })
+                      .create().show();
+              break;
+            case "Delete":
+                builder.setTitle("DELETE")
+                        .setMessage("Are you sure you want to delete " + textView.getText().toString())
+                        .setPositiveButton("OK", (dialogInterface, i1) -> {
+                        /*gData.delete("questions", "class=" + form + " subject=" + textView.getText().toString(), (result, error) -> {
                             if (result != null) {
                                 AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                                 builder1.setTitle("Success")
@@ -78,7 +64,7 @@ protected void onCreate(Bundle savedInstanceState) {
                                         .create()
                                         .show();
                             }
-                        });
+                        });*/
                     })
                     .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
                       //To do

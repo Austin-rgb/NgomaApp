@@ -14,13 +14,16 @@ public class SubjectsTableActivity extends CustomActivity {
         super.onCreate(savedInstanceState);
         setTitle("Subjects");
         table = "subject";
+        control.setContext(this);
         String form = getIntent().getStringExtra("class");
+        control.getSubjects(this);
         GData gData = new GData(this, testUrl, "questions", false);
-        gData.rawQuery("select distinct subject from questions where class=\'" + form + "\'", this);
+        //gData.rawQuery("select distinct subject from questions where class=\'" + form + "\'", this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(this, TopicsTableActivity.class);
             TextView tv = (TextView) view;
-            intent.putExtra("class", form).putExtra("subject", tv.getText().toString());
+            control.chooseSubject(tv.getText().toString());
+            intent.putExtra("control", control);
             startActivity(intent);
         });
         if (getSharedPreferences("credentials", 0).getBoolean("logged in", false)) {

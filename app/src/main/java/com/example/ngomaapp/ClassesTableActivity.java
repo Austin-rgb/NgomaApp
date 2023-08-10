@@ -1,14 +1,10 @@
 package com.example.ngomaapp;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 public class ClassesTableActivity extends CustomActivity {
@@ -23,17 +19,21 @@ public class ClassesTableActivity extends CustomActivity {
             });
         setTitle("Classes");
         table = "class";
-        GData gData = new GData(this, testUrl, "questions", false);
+        control = new Control(this);
+        // GData gData = new GData(this, testUrl, "questions", false);
         status.setText(R.string.loading);
         progressBar.setIndeterminate(true);
-        gData.rawQuery("select distinct class from questions", this);
+        // gData.rawQuery("select distinct class from questions", this);
+        control.getClasses(this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(this, SubjectsTableActivity.class);
             TextView tv = (TextView) view;
-            intent.putExtra("class", tv.getText());
+            // intent.putExtra("class", tv.getText());
+            control.chooseClass(tv.getText().toString());
+            intent.putExtra("control", control);
             startActivity(intent);
         });
-        if (getSharedPreferences("credentials", 0).getBoolean("logged in", false)) {
+       /* if (getSharedPreferences("credentials", 0).getBoolean("logged in", false)) {
             floatingActionButton.setVisibility(View.VISIBLE);
             listView.setOnItemLongClickListener((adapterView, view, i, l) -> {
                 TextView textView = (TextView) view;
@@ -69,7 +69,7 @@ public class ClassesTableActivity extends CustomActivity {
             });
             bottomNavigationView.setOnNavigationItemSelectedListener(item -> false);
             bottomNavigationView.getMenu().removeItem(0);
-        }
+        }*/
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
