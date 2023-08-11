@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -41,19 +42,6 @@ public class CustomActivity extends AppCompatActivity implements Callback {
         setContentView(R.layout.table);
         status = findViewById(R.id.status);
         progressBar = findViewById(R.id.progressBar);
-        bottomNavigationView = findViewById(R.id.navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getTitle().toString()) {
-                case "Next": {
-                    control.next();
-                }
-                break;
-                case "Previous": {
-                    control.previous();
-                }
-            }
-            return true;
-        });
         arrayList = new ArrayList<>();
         arrayAdapter = new ArrayAdapter<>(this, R.layout.listview, arrayList);
         listView = findViewById(R.id.listview);
@@ -95,5 +83,13 @@ public boolean onOptionsItemSelected(MenuItem menuItem){
     public void callback(String result, NgomaException error) {
         if (result != null) onSuccess(result);
         else onFailure(error);
+    }
+
+    public void next(View view) {
+        control.next();
+    }
+
+    public void previous(View view) {
+        control.previous();
     }
 }

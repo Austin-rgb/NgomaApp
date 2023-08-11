@@ -3,6 +3,7 @@ package com.example.ngomaapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -15,11 +16,10 @@ public class QuestionsTableActivity extends CustomActivity {
         table = "question";
         control.setContext(this);
         control.getQuestions(this);
-        String form = getIntent().getStringExtra("class");
-        String subject = getIntent().getStringExtra("subject");
-        String topic = getIntent().getStringExtra("topic");
-        //GData gData = new GData(this, testUrl, "questions", true);
-        //gData.rawQuery("select class,subject,topic,question,question_id from questions where class=\"" + form + "\" and subject=\"" + subject + "\" and topic=\"" + topic + "\"", this);
+        Button prev = findViewById(R.id.navPrev),
+                next = findViewById(R.id.navNext);
+        prev.setText(control.getPrevious());
+        next.setText(control.getNext());
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Intent intent = new Intent(this, AnswerActivity.class);
             TextView tv = (TextView) view;

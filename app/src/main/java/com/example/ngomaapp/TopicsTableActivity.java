@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -16,7 +17,10 @@ protected void onCreate(Bundle savedInstanceState) {
     table = "topic";
     control.setContext(this);
     control.getTopics(this);
-    // gData.rawQuery("select distinct topic from questions where class=\'" + form + "\' and " + "subject=\'" + subject + "\'", this);
+    Button prev = findViewById(R.id.navPrev),
+            next = findViewById(R.id.navNext);
+    prev.setText(control.getPrevious());
+    next.setText(control.getNext());
     listView.setOnItemClickListener((adapterView, view, i, l) -> {
         Intent intent = new Intent(this, QuestionsTableActivity.class);
         TextView tv = (TextView) view;

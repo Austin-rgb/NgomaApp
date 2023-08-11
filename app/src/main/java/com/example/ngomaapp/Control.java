@@ -1,6 +1,7 @@
 package com.example.ngomaapp;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +22,9 @@ public class Control implements Serializable {
     String subjects;
     String topics;
     String currentView;
+    String previousView;
     String questions;
+    String currentTable;
 
     public Control(Context context) {
         this.context = context;
@@ -38,6 +41,8 @@ public class Control implements Serializable {
         try (LData lData = new LData(context, "ngomatest", null, 1)) {
             lData.rawQuery("select distinct class from questions", (result, error) -> {
                 classes = result;
+                previousView = currentView;
+                currentView = classes;
                 callback.callback(result, error);
             });
         }
@@ -50,49 +55,91 @@ public class Control implements Serializable {
                             + "'",
                     (result, error) -> {
                         subjects = result;
+                        previousView = currentView;
+                        currentView = subjects;
                         callback.callback(result, error);
                     });
         }
     }
 
     public void next() {
-        if ("subjects".equals(currentView)) {
-            JSONArray jsonArray;
+
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(classes);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        for (int i = 0; i < jsonArray.length() - 1; i++) {
             try {
-                jsonArray = new JSONArray(classes);
+                if (Objects.equals(jsonArray.getString(i), form)) {
+                    form = jsonArray.getString(i + 1);
+                }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
-            }
-            for (int i = 0; i < jsonArray.length() - 1; i++) {
-                try {
-                    if (Objects.equals(jsonArray.getString(i), form)) {
-                        form = jsonArray.getString(i + 1);
-                    }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
             }
         }
     }
 
-    public void previous() {
-        if ("subjects".equals(currentView)) {
-            JSONArray jsonArray = null;
+    public String getNext() {
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(previousView);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        for (int i = 0; i < jsonArray.length() - 1; i++) {
             try {
-                jsonArray = new JSONArray(classes);
+                if (Objects.equals(jsonArray.getString(i), currentTable)) {
+                    Log.i("Control.getNext", "got " + currentTable);
+                    return jsonArray.getString(i + 1);
+                }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-            for (int i = 1; i < jsonArray.length(); i++) {
-                try {
-                    if (Objects.equals(jsonArray.getString(i), form)) {
-                        form = jsonArray.getString(i - 1);
-                    }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
+        }
+        Log.i("Control.getNext", "could not get " + currentTable);
+        return "End";
+    }
+
+    public void previous() {
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(previousView);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        for (int i = 1; i < jsonArray.length(); i++) {
+            try {
+                if (Objects.equals(jsonArray.getString(i), currentTable)) {
+                    form = jsonArray.getString(i - 1);
                 }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
         }
+    }
+
+    public String getPrevious() {
+
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(previousView);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        for (int i = 1; i < jsonArray.length(); i++) {
+            try {
+                if (Objects.equals(jsonArray.getString(i), currentTable)) {
+                    Log.i("Control.getNext", "got " + currentTable);
+                    return jsonArray.getString(i - 1);
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Log.i("Control.getPrevious", "could not get " + currentTable);
+        return "End";
     }
 
     public void getAnswer(Callback callback) {
@@ -109,6 +156,8 @@ public class Control implements Serializable {
         try (LData lData = new LData(context, "ngomatest", null, 1)) {
             lData.rawQuery("select class,subject,topic,question,question_id from questions where class='" + form + "' and subject='" + subject + "' and topic='" + topic + "'", (result, error) -> {
                 questions = result;
+                previousView = currentView;
+                currentView = result;
                 callback.callback(result, error);
             });
         }
@@ -122,31 +171,31 @@ public class Control implements Serializable {
                     + subject
                     + "'", (result, error) -> {
                 topics = result;
+                previousView = currentView;
+                currentView = topics;
                 callback.callback(result, error);
             });
         }
     }
 
-    public int chooseClass(String form) {
-        currentView = "classes";
+    public void chooseClass(String form) {
+        this.currentTable = form;
         this.form = form;
-        return 0;
     }
 
-    public int chooseSubject(String subject) {
-        currentView = "subjects";
+    public void chooseSubject(String subject) {
+        this.currentTable = subject;
         this.subject = subject;
-        return 0;
     }
 
-    public int chooseTopic(String topic) {
-        currentView = "topics";
+    public void chooseTopic(String topic) {
         this.topic = topic;
-        return 0;
+        this.currentTable = topic;
     }
 
-    public int chooseQuestion(String question) {
+    public void chooseQuestion(String question) {
         //search for question id
+        this.currentTable = question;
         try {
             JSONArray jsonArray = new JSONArray(questions);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -157,7 +206,6 @@ public class Control implements Serializable {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        return 0;
     }
 
     public int teacherLogin(String question) {

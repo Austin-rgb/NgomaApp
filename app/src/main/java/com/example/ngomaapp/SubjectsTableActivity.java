@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -17,6 +18,10 @@ public class SubjectsTableActivity extends CustomActivity {
         control.setContext(this);
         String form = getIntent().getStringExtra("class");
         control.getSubjects(this);
+        Button prev = findViewById(R.id.navPrev),
+                next = findViewById(R.id.navNext);
+        prev.setText(control.getPrevious());
+        next.setText(control.getNext());
         GData gData = new GData(this, testUrl, "questions", false);
         //gData.rawQuery("select distinct subject from questions where class=\'" + form + "\'", this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {

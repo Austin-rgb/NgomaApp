@@ -54,4 +54,8 @@
     <string name="submit">SUBMIT</string>
     <string name="transaction_id">Transaction Id</string>
     <string name="webviewtitle">Video Description</string>
+    <string name="details">Details</string>
+    <string name="premium">Premium</string>
+    <string name="login">Login</string>
+    <string name="about">About</string>
 </resources>
