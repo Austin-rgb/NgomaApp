@@ -2,7 +2,6 @@ package com.example.ngomaapp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
 import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
@@ -67,60 +66,46 @@ public enum Utils {
     }
 
     static void inflateAsset2sqlite(Context context, String asset, Callback callback) throws IOException {
-        LData lData = new LData(context, "ngomatest", null, 1);
-        try (Scanner scanner = new Scanner(context.getAssets().open(asset))) {
-            StringBuilder stringBuilder = new StringBuilder();
-            while (scanner.hasNext()) stringBuilder.append(scanner.nextLine());
-            JSONArray jsonArray = new JSONArray(stringBuilder.toString());
-            for (int i = 0; i < jsonArray.length(); i++) {
-                ExtendedJSONObj jsonObj = new ExtendedJSONObj(jsonArray.get(i).toString());
-                lData.insert(asset.replaceAll("\\.json", ""), jsonObj.getNames(), jsonObj.getValues(), callback);
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    static JSONArray cursor2json(Cursor cursor) {
-        JSONArray jsonArray = new JSONArray();
-        while (cursor.moveToNext()) {
-            JSONObject jsonObject = new JSONObject();
-            for (int i = 0; i < cursor.getColumnCount(); i++) {
-                try {
-                    jsonObject.put(cursor.getColumnName(i), cursor.getString(i));
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
+        try (LData lData = new LData(context, "ngomatest", null, 1)) {
+            try (Scanner scanner = new Scanner(context.getAssets().open(asset))) {
+                StringBuilder stringBuilder = new StringBuilder();
+                while (scanner.hasNext()) stringBuilder.append(scanner.nextLine());
+                JSONArray jsonArray = new JSONArray(stringBuilder.toString());
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    ExtendedJSONObj jsonObj = new ExtendedJSONObj(jsonArray.get(i).toString());
+                    lData.insert(asset.replaceAll("\\.json", ""), jsonObj.getNames(), jsonObj.getValues(), callback);
                 }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
             }
-            jsonArray.put(jsonObject);
         }
-        return jsonArray;
+    }
+
+    static class ExtendedJSONObj extends JSONObject {
+        public ExtendedJSONObj(String s) throws JSONException {
+            super(s);
+        }
+
+        public String[] getNames() throws JSONException {
+            JSONArray jsonArray = names();
+            String[] strings = new String[Objects.requireNonNull(jsonArray).length()];
+            for (int i = 0; i < jsonArray.length(); i++) {
+                strings[i] = jsonArray.getString(i);
+            }
+            return strings;
+        }
+
+        public String[] getValues() throws JSONException {
+            JSONArray jsonArray = names();
+            String[] names,
+                    values = new String[Objects.requireNonNull(jsonArray).length()];
+            names = getNames();
+            for (int i = 0; i < names.length; i++) {
+                values[i] = get(names[i]).toString();
+            }
+            return values;
+        }
     }
 
 }
 
-class ExtendedJSONObj extends JSONObject {
-    public ExtendedJSONObj(String s) throws JSONException {
-        super(s);
-    }
-
-    public String[] getNames() throws JSONException {
-        JSONArray jsonArray = names();
-        String[] strings = new String[Objects.requireNonNull(jsonArray).length()];
-        for (int i = 0; i < jsonArray.length(); i++) {
-            strings[i] = jsonArray.getString(i);
-        }
-        return strings;
-    }
-
-    public String[] getValues() throws JSONException {
-        JSONArray jsonArray = names();
-        String[] names,
-                values = new String[Objects.requireNonNull(jsonArray).length()];
-        names = getNames();
-        for (int i = 0; i < names.length; i++) {
-            values[i] = get(names[i]).toString();
-        }
-        return values;
-    }
-}

@@ -37,7 +37,7 @@ public class LData extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS answers");
     }
 
-    public LData rawQuery(String query, Callback callback) {
+    public void rawQuery(String query, Callback callback) {
         Cursor cursor = this.getWritableDatabase().rawQuery(query, null);
         String[] columns = cursor.getColumnNames();
         Log.i("LData", " Querying " + query);
@@ -56,7 +56,6 @@ public class LData extends SQLiteOpenHelper {
         }
         callback.callback(jsonArray.toString(), null);
         cursor.close();
-        return this;
     }
 
     public void insert(String table, String[] columns, String[] values, Callback callback) {

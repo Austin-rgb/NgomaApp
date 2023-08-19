@@ -18,13 +18,6 @@ public class GData {
     String table;
     String link, username, password, database;
 
-    public GData(Context context, GDataConf conf) {
-        this.ctx = context;
-        this.backup = conf.backup();
-        this.link = conf.link();
-        this.table = conf.table();
-    }
-
     public GData(Context context, String link, String table, Boolean backup) {
         this.ctx = context;
         this.backup = backup;

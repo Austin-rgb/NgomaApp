@@ -1,13 +1,6 @@
 package com.example.ngomaapp;
 
-import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.PopupMenu;
-import android.widget.TextView;
 
 public class SubjectsTableActivity extends CustomActivity {
     @Override
@@ -18,10 +11,22 @@ public class SubjectsTableActivity extends CustomActivity {
         control.setContext(this);
         String form = getIntent().getStringExtra("class");
         control.getSubjects(this);
-        Button prev = findViewById(R.id.navPrev),
+       /* Button prev = findViewById(R.id.navPrev),
                 next = findViewById(R.id.navNext);
-        prev.setText(control.getPrevious());
-        next.setText(control.getNext());
+        prev.setText(control.getPrevious("class"));
+        prev.setOnClickListener(view -> {
+            control.moveToPrevious();
+            Intent intent=new Intent(this, SubjectsTableActivity.class);
+            intent.putExtra("control",control);
+            startActivity(intent);
+        });
+        next.setText(control.getNext("class"));
+        next.setOnClickListener(view -> {
+            control.moveToNext();
+            Intent intent=new Intent(this, SubjectsTableActivity.class);
+            intent.putExtra("control",control);
+            startActivity(intent);
+        });
         GData gData = new GData(this, testUrl, "questions", false);
         //gData.rawQuery("select distinct subject from questions where class=\'" + form + "\'", this);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -103,6 +108,6 @@ public class SubjectsTableActivity extends CustomActivity {
             // }
             bottomNavigationView.setOnNavigationItemSelectedListener(item -> false);
             bottomNavigationView.getMenu().removeItem(0);
-        }
+        }*/
     }
 }

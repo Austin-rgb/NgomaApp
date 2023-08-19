@@ -39,15 +39,14 @@ public class CustomActivity extends AppCompatActivity implements Callback {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         control = (Control) getIntent().getSerializableExtra("control");
-        setContentView(R.layout.table);
-        status = findViewById(R.id.status);
+        /*status = findViewById(R.id.status);
         progressBar = findViewById(R.id.progressBar);
         arrayList = new ArrayList<>();
         arrayAdapter = new ArrayAdapter<>(this, R.layout.listview, arrayList);
         listView = findViewById(R.id.listview);
         listView.setAdapter(arrayAdapter);
         floatingActionButton = findViewById(R.id.actionButton);
-        builder = new AlertDialog.Builder(this);
+        builder = new AlertDialog.Builder(this);*/
     }
 public boolean onCreateOptionsMenu(Menu menu){
   getMenuInflater().inflate(R.menu.menu,menu);
@@ -63,6 +62,7 @@ public boolean onOptionsItemSelected(MenuItem menuItem){
       Log.i("CustomActivity", "got remote data " + change);
       try {
           jsonData = new JSONArray(change);
+          arrayList.clear();
           for (int i = 0; i < jsonData.length(); i++) {
               JSONObject jsonObject = jsonData.getJSONObject(i);
               arrayList.add(jsonObject.getString(table));
@@ -86,10 +86,10 @@ public boolean onOptionsItemSelected(MenuItem menuItem){
     }
 
     public void next(View view) {
-        control.next();
+        control.moveToNext();
     }
 
     public void previous(View view) {
-        control.previous();
+        control.moveToPrevious();
     }
 }

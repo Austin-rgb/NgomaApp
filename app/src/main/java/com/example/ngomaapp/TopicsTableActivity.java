@@ -1,13 +1,6 @@
 package com.example.ngomaapp;
 
-import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.PopupMenu;
-import android.widget.TextView;
 
 public class TopicsTableActivity extends CustomActivity{
 @Override
@@ -17,10 +10,22 @@ protected void onCreate(Bundle savedInstanceState) {
     table = "topic";
     control.setContext(this);
     control.getTopics(this);
-    Button prev = findViewById(R.id.navPrev),
+    /*Button prev = findViewById(R.id.navPrev),
             next = findViewById(R.id.navNext);
-    prev.setText(control.getPrevious());
-    next.setText(control.getNext());
+    prev.setText(control.getPrevious("subject"));
+    prev.setOnClickListener(view -> {
+        control.moveToPrevious();
+        Intent intent=new Intent(this, TopicsTableActivity.class);
+        intent.putExtra("control",control);
+        startActivity(intent);
+    });
+    next.setText(control.getNext("subject"));
+    next.setOnClickListener(view -> {
+        control.moveToNext();
+        Intent intent=new Intent(this, TopicsTableActivity.class);
+        intent.putExtra("control",control);
+        startActivity(intent);
+    });
     listView.setOnItemClickListener((adapterView, view, i, l) -> {
         Intent intent = new Intent(this, QuestionsTableActivity.class);
         TextView tv = (TextView) view;
@@ -36,45 +41,30 @@ protected void onCreate(Bundle savedInstanceState) {
       popupMenu.getMenuInflater().inflate(R.menu.popup, popupMenu.getMenu());
       popupMenu.setOnMenuItemClickListener(menuItem -> {
         AlertDialog.Builder builder = new AlertDialog.Builder(TopicsTableActivity.this);
+
         switch (menuItem.getTitle().toString()) {
-          case "Rename":
-            EditText newName = new EditText(TopicsTableActivity.this);
-              newName.setText(textView.getText());
-              newName.selectAll();
-              builder.setTitle("RENAME")
-                      .setView(newName)
+              case "Rename" -> {
+                  EditText newName = new EditText(TopicsTableActivity.this);
+                  newName.setText(textView.getText());
+                  newName.selectAll();
+                  builder.setTitle("RENAME")
+                          .setView(newName)
+                          .setPositiveButton("OK", (dialogInterface, i1) -> {
+                          })
+                          .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
+                              //To do
+                          })
+                          .create().show();
+              }
+              case "Delete" -> builder.setTitle("DELETE")
+                      .setMessage("Are you sure you want to delete " + textView.getText().toString())
                       .setPositiveButton("OK", (dialogInterface, i1) -> {
                       })
                       .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
                           //To do
                       })
                       .create().show();
-              break;
-            case "Delete":
-                builder.setTitle("DELETE")
-                        .setMessage("Are you sure you want to delete " + textView.getText().toString())
-                        .setPositiveButton("OK", (dialogInterface, i1) -> {
-                        /*gData.delete("questions", "class=" + form + " subject=" + textView.getText().toString(), (result, error) -> {
-                            if (result != null) {
-                                AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-                                builder1.setTitle("Success")
-                                        .setMessage("successfully deleted " + textView.getText().toString())
-                                        .create()
-                                        .show();
-                            } else {
-                                AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-                                builder1.setTitle("Failed")
-                                        .setMessage("could not delete " + textView.getText().toString())
-                                        .create()
-                                        .show();
-                            }
-                        });*/
-                    })
-                    .setNegativeButton("CANCEL", (dialogInterface, i12) -> {
-                      //To do
-                    })
-                    .create().show();
-        }
+          }
         return true;
       });
       popupMenu.show();
@@ -83,6 +73,6 @@ protected void onCreate(Bundle savedInstanceState) {
     // }
     bottomNavigationView.setOnNavigationItemSelectedListener(item -> false);
     bottomNavigationView.getMenu().removeItem(0);
-  }
+  }*/
 }
 }

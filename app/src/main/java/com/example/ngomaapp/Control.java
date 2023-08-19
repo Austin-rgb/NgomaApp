@@ -12,25 +12,20 @@ import java.util.Objects;
 
 public class Control implements Serializable {
     transient Context context;
-    String answer;
-    String form;
-    String subject;
-    String topic;
-    String question;
-    String questionId;
-    String classes;
-    String subjects;
-    String topics;
-    String currentView;
-    String previousView;
-    String questions;
-    String currentTable;
+    private String form;
+    private String subject;
+    private String topic;
+    private String questionId;
+    private String classes;
+    private String subjects;
+    private String topics;
+    private String currentView;
+    private String previousView;
+    private String questions;
+    private String currentTable;
 
     public Control(Context context) {
         this.context = context;
-    }
-
-    public Control() {
     }
 
     public void setContext(Context context) {
@@ -55,33 +50,13 @@ public class Control implements Serializable {
                             + "'",
                     (result, error) -> {
                         subjects = result;
-                        previousView = currentView;
-                        currentView = subjects;
                         callback.callback(result, error);
                     });
         }
     }
 
-    public void next() {
+    public void moveToNext() {
 
-        JSONArray jsonArray;
-        try {
-            jsonArray = new JSONArray(classes);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        for (int i = 0; i < jsonArray.length() - 1; i++) {
-            try {
-                if (Objects.equals(jsonArray.getString(i), form)) {
-                    form = jsonArray.getString(i + 1);
-                }
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public String getNext() {
         JSONArray jsonArray;
         try {
             jsonArray = new JSONArray(previousView);
@@ -91,18 +66,54 @@ public class Control implements Serializable {
         for (int i = 0; i < jsonArray.length() - 1; i++) {
             try {
                 if (Objects.equals(jsonArray.getString(i), currentTable)) {
-                    Log.i("Control.getNext", "got " + currentTable);
-                    return jsonArray.getString(i + 1);
+                    currentTable = jsonArray.getString(i + 1);
                 }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
         }
-        Log.i("Control.getNext", "could not get " + currentTable);
-        return "End";
     }
 
-    public void previous() {
+    public String getNext(String table) {
+        switch (table) {
+            case "class":
+                return navigator(classes, table);
+            case "subject ":
+                return navigator(subjects, table);
+            case "topic ":
+                return navigator(topics, table);
+        }
+
+        return table;
+    }
+
+    String navigator(String previousView, String table) {
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(previousView);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        String next = null;
+        for (int i = 0; i < jsonArray.length() - 1; i++) {
+            try {
+                if (Objects.equals(jsonArray.getJSONObject(i).getString(table), currentTable)) {
+                    next = jsonArray.getJSONObject(i + 1).getString(table);
+                    Log.i("Control.getNext", "got " + currentTable + "in " + previousView);
+                    break;
+                }
+            } catch (JSONException e) {
+                Log.e("Control.getNext", e.getMessage() + " while working with " + previousView);
+            }
+        }
+        if (next == null) {
+            Log.i("Control.getNext", "could not get " + currentTable + " in " + previousView);
+            return "End";
+        } else return next;
+
+    }
+
+    public void moveToPrevious() {
         JSONArray jsonArray;
         try {
             jsonArray = new JSONArray(previousView);
@@ -120,7 +131,7 @@ public class Control implements Serializable {
         }
     }
 
-    public String getPrevious() {
+    public String getPrevious(String table) {
 
         JSONArray jsonArray;
         try {
@@ -130,25 +141,23 @@ public class Control implements Serializable {
         }
         for (int i = 1; i < jsonArray.length(); i++) {
             try {
-                if (Objects.equals(jsonArray.getString(i), currentTable)) {
-                    Log.i("Control.getNext", "got " + currentTable);
-                    return jsonArray.getString(i - 1);
+                String test = jsonArray.getJSONObject(i).getString(table);
+                if (Objects.equals(test, currentTable)) {
+                    Log.i("Control.getNext", "got " + currentTable + " in " + previousView);
+                    return jsonArray.getJSONObject(i - 1).getString(table);
                 }
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                Log.e("Control.getPrevious", e.getMessage() + " while working with " + previousView);
             }
         }
-        Log.i("Control.getPrevious", "could not get " + currentTable);
+        Log.i("Control.getPrevious", "could not get " + currentTable + " in " + previousView);
         return "End";
     }
 
     public void getAnswer(Callback callback) {
         try (LData lData = new LData(context, "ngomatest", null, 1)) {
             lData.rawQuery("select answer,link from answers where question_id="
-                    + questionId, (result, error) -> {
-                answer = result;
-                callback.callback(result, error);
-            });
+                    + questionId, callback);
         }
     }
 
@@ -208,23 +217,4 @@ public class Control implements Serializable {
         }
     }
 
-    public int teacherLogin(String question) {
-        return 0;
-    }
-
-    public int addQuestion(String question) {
-        return 0;
-    }
-
-    public int deleteClass(String question) {
-        return 0;
-    }
-
-    public int deleteSubject(String question) {
-        return 0;
-    }
-
-    public int deleteTopic(String question) {
-        return 0;
-    }
 }

@@ -17,14 +17,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void login(View view) {
-        EditText emailInput = (EditText) findViewById(R.id.email);
-        EditText passwordInput = (EditText) findViewById(R.id.password);
+        EditText emailInput = findViewById(R.id.email);
+        EditText passwordInput = findViewById(R.id.password);
         String email = emailInput.getText().toString();
         String password = passwordInput.getText().toString();
-        if (email == "" || password == "") return;
-        else {
+        if (!("".equals(email) || "".equals(password))) {
             getSharedPreferences("credentials", 0).edit().putString("username", email).putString("password", password).apply();
         }
+
         //String login=server+"/smi.php";
 
         /*InternetDaemon internetDaemon = new InternetDaemon();

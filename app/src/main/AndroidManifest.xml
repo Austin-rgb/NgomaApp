@@ -16,7 +16,8 @@
         android:theme="@style/Theme.NgomaApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="34">
-        <service
+
+    <service
             android:name=".UtilityService"
             android:enabled="true"
             android:exported="false"
